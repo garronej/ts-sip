@@ -301,18 +301,8 @@ export class Socket {
 
         }
 
-        let __before = Date.now();
-
         ((out instanceof Promise) ? out : Promise.resolve(true))
             .then(isSent => {
-
-                let __elapsed = Date.now() - __before;
-
-                if (__elapsed > 200) {
-
-                    console.log(`WARNING WARNING WARNING write took ${__elapsed}ms to compleat`.red);
-
-                }
 
                 if (isSent) {
 
