@@ -22,13 +22,13 @@
     "sip": "github:garronej/sip.js#no-websocket",
     "transfer-tools": "garronej/transfer-tools",
     "ts-events-extended": "garronej/ts-events-extended",
-    "ws": "^4.0.0"
+    "ws": "^4.0.0",
+    "@types/ws": "^4.0.0"
   },
   "devDependencies": {
     "rejection-tracker": "github:garronej/rejection-tracker",
     "@types/colors": "^1.1.3",
     "@types/node": "^6.0.96",
-    "@types/ws": "^4.0.0",
     "typescript": "^2.7.1"
   }
 }
