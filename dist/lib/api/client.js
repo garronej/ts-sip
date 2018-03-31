@@ -50,11 +50,11 @@ var ApiMessage_1 = require("./ApiMessage");
 function sendRequest(socket, methodName, params, extra) {
     if (extra === void 0) { extra = {}; }
     return __awaiter(this, void 0, void 0, function () {
-        var logger, sipRequest, actionId, writeSuccess, sipRequestResponse, timeoutValue, error_1, sendRequestError, response, sendRequestError;
+        var errorLogger, sipRequest, actionId, writeSuccess, sipRequestResponse, timeoutValue, error_1, sendRequestError, response, sendRequestError;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    logger = socket.misc[enableLogging.miscKey] || {};
+                    errorLogger = socket.misc[enableErrorLogging.miscKey] || {};
                     sipRequest = ApiMessage_1.ApiMessage.Request.buildSip(methodName, params);
                     misc.buildNextHopPacket.pushVia(socket, sipRequest);
                     actionId = ApiMessage_1.ApiMessage.readActionId(sipRequest);
@@ -62,8 +62,8 @@ function sendRequest(socket, methodName, params, extra) {
                 case 1:
                     writeSuccess = _a.sent();
                     if (!writeSuccess) {
-                        if (!!logger.onRequestNotSent) {
-                            logger.onRequestNotSent(methodName, params, socket);
+                        if (!!errorLogger.onRequestNotSent) {
+                            errorLogger.onRequestNotSent(methodName, params, socket);
                         }
                         socket.destroy();
                         throw new SendRequestError(methodName, params, "CANNOT SEND REQUEST");
@@ -84,14 +84,14 @@ function sendRequest(socket, methodName, params, extra) {
                     sendRequestError = new SendRequestError(methodName, params, (error_1.message === "CLOSE") ?
                         "SOCKET CLOSED BEFORE RECEIVING RESPONSE" : "REQUEST TIMEOUT");
                     if (sendRequestError.cause === "REQUEST TIMEOUT") {
-                        if (!!logger.onRequestTimeout) {
-                            logger.onRequestTimeout(methodName, params, timeoutValue, socket);
+                        if (!!errorLogger.onRequestTimeout) {
+                            errorLogger.onRequestTimeout(methodName, params, timeoutValue, socket);
                         }
                         socket.destroy();
                     }
                     else {
-                        if (!!logger.onClosedConnection) {
-                            logger.onClosedConnection(methodName, params, socket);
+                        if (!!errorLogger.onClosedConnection) {
+                            errorLogger.onClosedConnection(methodName, params, socket);
                         }
                     }
                     throw sendRequestError;
@@ -102,8 +102,8 @@ function sendRequest(socket, methodName, params, extra) {
                     catch (_b) {
                         sendRequestError = new SendRequestError(methodName, params, "MALFORMED RESPONSE");
                         sendRequestError.misc["sipRequestResponse"] = sipRequestResponse;
-                        if (!!logger.onMalformedResponse) {
-                            logger.onMalformedResponse(methodName, params, misc.getPacketContent(sipRequestResponse), socket);
+                        if (!!errorLogger.onMalformedResponse) {
+                            errorLogger.onMalformedResponse(methodName, params, misc.getPacketContent(sipRequestResponse), socket);
                         }
                         socket.destroy();
                         throw sendRequestError;
@@ -114,13 +114,13 @@ function sendRequest(socket, methodName, params, extra) {
     });
 }
 exports.sendRequest = sendRequest;
-function enableLogging(socket, logger) {
-    socket.misc[enableLogging.miscKey] = logger;
+function enableErrorLogging(socket, errorLogger) {
+    socket.misc[enableErrorLogging.miscKey] = errorLogger;
 }
-exports.enableLogging = enableLogging;
-(function (enableLogging) {
-    enableLogging.miscKey = "__api_client_logger__";
-})(enableLogging = exports.enableLogging || (exports.enableLogging = {}));
+exports.enableErrorLogging = enableErrorLogging;
+(function (enableErrorLogging) {
+    enableErrorLogging.miscKey = " __api_client_error_logger__ ";
+})(enableErrorLogging = exports.enableErrorLogging || (exports.enableErrorLogging = {}));
 function enableKeepAlive(socket, interval) {
     var _this = this;
     if (interval === void 0) { interval = 120 * 1000; }
@@ -181,7 +181,7 @@ var SendRequestError = /** @class */ (function (_super) {
     return SendRequestError;
 }(Error));
 exports.SendRequestError = SendRequestError;
-function getDefaultLogger(options) {
+function getDefaultErrorLogger(options) {
     options = options || {};
     var idString = options.idString || "";
     var log = options.log || console.log;
@@ -209,4 +209,4 @@ function getDefaultLogger(options) {
         }
     };
 }
-exports.getDefaultLogger = getDefaultLogger;
+exports.getDefaultErrorLogger = getDefaultErrorLogger;

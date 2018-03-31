@@ -13,7 +13,7 @@ export async function sendRequest<Params, Response>(
     } = {}
 ): Promise<Response> {
 
-    let logger: Partial<Logger> = socket.misc[enableLogging.miscKey] || {};
+    let errorLogger: Partial<ErrorLogger> = socket.misc[enableErrorLogging.miscKey] || {};
 
     let sipRequest = ApiMessage.Request.buildSip(methodName, params);
 
@@ -25,9 +25,9 @@ export async function sendRequest<Params, Response>(
 
     if (!writeSuccess) {
 
-        if (!!logger.onRequestNotSent) {
+        if (!!errorLogger.onRequestNotSent) {
 
-            logger.onRequestNotSent(methodName, params, socket);
+            errorLogger.onRequestNotSent(methodName, params, socket);
 
         }
 
@@ -69,9 +69,9 @@ export async function sendRequest<Params, Response>(
 
         if (sendRequestError.cause === "REQUEST TIMEOUT") {
 
-            if (!!logger.onRequestTimeout) {
+            if (!!errorLogger.onRequestTimeout) {
 
-                logger.onRequestTimeout(methodName, params, timeoutValue, socket);
+                errorLogger.onRequestTimeout(methodName, params, timeoutValue, socket);
 
             }
 
@@ -79,9 +79,9 @@ export async function sendRequest<Params, Response>(
 
         } else {
 
-            if (!!logger.onClosedConnection) {
+            if (!!errorLogger.onClosedConnection) {
 
-                logger.onClosedConnection(methodName, params, socket);
+                errorLogger.onClosedConnection(methodName, params, socket);
 
             }
 
@@ -110,9 +110,9 @@ export async function sendRequest<Params, Response>(
 
         sendRequestError.misc["sipRequestResponse"] = sipRequestResponse;
 
-        if (!!logger.onMalformedResponse) {
+        if (!!errorLogger.onMalformedResponse) {
 
-            logger.onMalformedResponse(
+            errorLogger.onMalformedResponse(
                 methodName, params, misc.getPacketContent(sipRequestResponse), socket
             );
 
@@ -128,19 +128,15 @@ export async function sendRequest<Params, Response>(
 
 }
 
-export function enableLogging(
+export function enableErrorLogging(
     socket: Socket,
-    logger: Partial<Logger>
+    errorLogger: Partial<ErrorLogger>
 ): void {
-
-    socket.misc[enableLogging.miscKey] = logger;
-
+    socket.misc[enableErrorLogging.miscKey] = errorLogger;
 }
 
-export namespace enableLogging {
-
-    export const miscKey = "__api_client_logger__";
-
+export namespace enableErrorLogging {
+    export const miscKey = " __api_client_error_logger__ ";
 }
 
 export function enableKeepAlive(
@@ -212,19 +208,19 @@ export class SendRequestError extends Error {
     }
 }
 
-export type Logger = {
+export type ErrorLogger = {
     onRequestNotSent(methodName: string, params: any, socket: Socket): void;
     onClosedConnection(methodName: string, params: any, socket: Socket): void;
     onRequestTimeout(methodName: string, params: any, timeoutValue: number, socket: Socket): void;
     onMalformedResponse(methodName: string, params: any, rawResponse: Buffer, socket: Socket): void;
 };
 
-export function getDefaultLogger(
+export function getDefaultErrorLogger(
     options?: Partial<{
         idString: string;
         log: typeof console.log;
     }>
-): Logger {
+): ErrorLogger {
 
     options = options || {};
 

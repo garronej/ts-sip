@@ -4,9 +4,9 @@ export declare function sendRequest<Params, Response>(socket: Socket, methodName
     timeout?: number;
     sanityCheck?: (response: Response) => boolean;
 }): Promise<Response>;
-export declare function enableLogging(socket: Socket, logger: Partial<Logger>): void;
-export declare namespace enableLogging {
-    const miscKey = "__api_client_logger__";
+export declare function enableErrorLogging(socket: Socket, errorLogger: Partial<ErrorLogger>): void;
+export declare namespace enableErrorLogging {
+    const miscKey = " __api_client_error_logger__ ";
 }
 export declare function enableKeepAlive(socket: Socket, interval?: number): void;
 export declare class SendRequestError extends Error {
@@ -16,13 +16,13 @@ export declare class SendRequestError extends Error {
     readonly misc: {};
     constructor(methodName: string, params: any, cause: "CANNOT SEND REQUEST" | "SOCKET CLOSED BEFORE RECEIVING RESPONSE" | "REQUEST TIMEOUT" | "MALFORMED RESPONSE");
 }
-export declare type Logger = {
+export declare type ErrorLogger = {
     onRequestNotSent(methodName: string, params: any, socket: Socket): void;
     onClosedConnection(methodName: string, params: any, socket: Socket): void;
     onRequestTimeout(methodName: string, params: any, timeoutValue: number, socket: Socket): void;
     onMalformedResponse(methodName: string, params: any, rawResponse: Buffer, socket: Socket): void;
 };
-export declare function getDefaultLogger(options?: Partial<{
+export declare function getDefaultErrorLogger(options?: Partial<{
     idString: string;
     log: typeof console.log;
-}>): Logger;
+}>): ErrorLogger;
