@@ -190,13 +190,8 @@ var Socket = /** @class */ (function () {
                 ]);
             }
         }
-        var __before = Date.now();
         ((out instanceof Promise) ? out : Promise.resolve(true))
             .then(function (isSent) {
-            var __elapsed = Date.now() - __before;
-            if (__elapsed > 200) {
-                console.log(("WARNING WARNING WARNING write took " + __elapsed + "ms to compleat").red);
-            }
             if (isSent) {
                 if (!!_this.loggerEvt.evtPacketOut) {
                     _this.loggerEvt.evtPacketOut.post(sipPacket);

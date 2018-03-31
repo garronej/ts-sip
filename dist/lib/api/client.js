@@ -62,6 +62,10 @@ function sendRequest(socket, methodName, params, extra) {
                 case 1:
                     writeSuccess = _a.sent();
                     if (!writeSuccess) {
+                        if (!!logger.onRequestNotSent) {
+                            logger.onRequestNotSent(methodName, params, socket);
+                        }
+                        socket.destroy();
                         throw new SendRequestError(methodName, params, "CANNOT SEND REQUEST");
                     }
                     timeoutValue = extra.timeout || 5 * 60 * 1000;
@@ -191,6 +195,9 @@ function getDefaultLogger(options) {
         "params: " + JSON.stringify(params) + "\n",
     ].join(" "); };
     return {
+        "onRequestNotSent": function (methodName, params, socket) {
+            return log(base(socket, methodName, params) + "Request not sent");
+        },
         "onClosedConnection": function (methodName, params, socket) {
             return log(base(socket, methodName, params) + "Remote connection lost");
         },

@@ -17,7 +17,8 @@ export declare class SendRequestError extends Error {
     constructor(methodName: string, params: any, cause: "CANNOT SEND REQUEST" | "SOCKET CLOSED BEFORE RECEIVING RESPONSE" | "REQUEST TIMEOUT" | "MALFORMED RESPONSE");
 }
 export declare type Logger = {
-    onClosedConnection(methodName: string, params: any, socket): void;
+    onRequestNotSent(methodName: string, params: any, socket: Socket): void;
+    onClosedConnection(methodName: string, params: any, socket: Socket): void;
     onRequestTimeout(methodName: string, params: any, timeoutValue: number, socket: Socket): void;
     onMalformedResponse(methodName: string, params: any, rawResponse: Buffer, socket: Socket): void;
 };
