@@ -127,7 +127,7 @@ exports.Server = Server;
     function getDefaultLogger(options) {
         options = options || {};
         var idString = options.idString || "";
-        var log = options.log || console.log;
+        var log = options.log || console.log.bind(console);
         var displayOnlyErrors = options.displayOnlyErrors || false;
         var hideKeepAlive = options.hideKeepAlive || false;
         var base = function (socket, methodName, isError, date) {

@@ -184,7 +184,7 @@ exports.SendRequestError = SendRequestError;
 function getDefaultErrorLogger(options) {
     options = options || {};
     var idString = options.idString || "";
-    var log = options.log || console.log;
+    var log = options.log || console.log.bind(console);
     var base = function (socket, methodName, params) { return [
         ("[ Sip API " + idString + " call Error ]").red,
         socket.localAddress + ":" + socket.localPort + " (local)",

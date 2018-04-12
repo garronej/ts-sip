@@ -183,7 +183,7 @@ export namespace Server {
         options= options || {};
 
         let idString= options.idString || "";
-        let log= options.log || console.log;
+        let log= options.log || console.log.bind(console);
         let displayOnlyErrors= options.displayOnlyErrors || false;
         let hideKeepAlive= options.hideKeepAlive || false;
 

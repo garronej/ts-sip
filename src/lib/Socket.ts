@@ -399,7 +399,7 @@ export class Socket {
             colorizedTraffic?: "OUT" | "IN";
             ignoreApiTraffic?: boolean;
         },
-        log: typeof console.log = console.log
+        log: typeof console.log = console.log.bind(console)
     ) {
 
         const prefix = `[ Sip Socket ${this.protocol} ]`.yellow;

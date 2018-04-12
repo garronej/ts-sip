@@ -225,7 +225,7 @@ export function getDefaultErrorLogger(
     options = options || {};
 
     let idString = options.idString || "";
-    let log = options.log || console.log;
+    let log = options.log || console.log.bind(console);
 
     const base = (socket: Socket, methodName: string, params: any) => [
         `[ Sip API ${idString} call Error ]`.red,

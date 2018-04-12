@@ -228,7 +228,7 @@ var Socket = /** @class */ (function () {
     };
     Socket.prototype.enableLogger = function (params, log) {
         var _this = this;
-        if (log === void 0) { log = console.log; }
+        if (log === void 0) { log = console.log.bind(console); }
         var prefix = ("[ Sip Socket " + this.protocol + " ]").yellow;
         var getKey = (params.colorizedTraffic === "IN") ? (function (direction) { return [
             prefix,
