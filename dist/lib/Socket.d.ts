@@ -1,10 +1,30 @@
 /// <reference types="node" />
-/// <reference types="ws" />
 import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
 import * as net from "net";
-import * as WebSocket from "ws";
 import * as types from "./types";
 import "colors";
+/**
+ * This is just a phony interface so we do not have to include @types/ws
+ * as production dependency.
+ *
+ * To see the real def:
+ *
+ * import * as WebSocket from "ws";
+ *
+ * **/
+export interface IWebSocket {
+    emit: any;
+    on: any;
+    once: any;
+    terminate(): void;
+    send(data: any, cb?: (err: Error) => void): void;
+    send(data: any, options: {
+        mask?: boolean;
+        binary?: boolean;
+        compress?: boolean;
+        fin?: boolean;
+    }, cb?: (err: Error) => void): void;
+}
 export declare class Socket {
     private readonly connection;
     private readonly spoofedAddressAndPort;
@@ -33,7 +53,7 @@ export declare class Socket {
     readonly localAddress: string;
     readonly remoteAddress: string;
     haveBeedDestroyed: boolean;
-    constructor(webSocket: WebSocket, addrAndPorts: Socket.AddrAndPorts);
+    constructor(webSocket: IWebSocket, addrAndPorts: Socket.AddrAndPorts);
     constructor(socket: net.Socket, spoofedAddrAndPorts?: Partial<Socket.AddrAndPorts>);
     readonly setKeepAlive: net.Socket['setKeepAlive'];
     /** Return true if sent successfully */
@@ -65,5 +85,5 @@ export declare namespace Socket {
         localAddress: string;
         remoteAddress: string;
     };
-    function matchWebSocket(socket: net.Socket | WebSocket): socket is WebSocket;
+    function matchWebSocket(socket: net.Socket | IWebSocket): socket is IWebSocket;
 }

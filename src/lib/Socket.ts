@@ -1,6 +1,5 @@
 import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
 import * as net from "net";
-import * as WebSocket from "ws";
 
 import * as types from "./types";
 import * as core from "./core";
@@ -9,6 +8,24 @@ import * as misc from "./misc";
 import { sipMethodName as apiSipMethodName } from "./api/ApiMessage";
 
 import "colors";
+
+/**
+ * This is just a phony interface so we do not have to include @types/ws
+ * as production dependency.
+ * 
+ * To see the real def:
+ * 
+ * import * as WebSocket from "ws"; 
+ * 
+ * **/
+export interface IWebSocket {
+    emit: any;
+    on: any;
+    once: any;
+    terminate(): void;
+    send(data: any, cb?: (err: Error) => void): void;
+    send(data: any, options: { mask?: boolean; binary?: boolean; compress?: boolean; fin?: boolean }, cb?: (err: Error) => void): void;
+}
 
 //TODO: make a function to test if message are well formed: have from, to via ect.
 export class Socket {
@@ -60,7 +77,7 @@ export class Socket {
     public haveBeedDestroyed = false;
 
     constructor(
-        webSocket: WebSocket,
+        webSocket: IWebSocket,
         addrAndPorts: Socket.AddrAndPorts
     );
     constructor(
@@ -68,7 +85,7 @@ export class Socket {
         spoofedAddrAndPorts?: Partial<Socket.AddrAndPorts>
     );
     constructor(
-        private readonly connection: WebSocket | net.Socket,
+        private readonly connection: IWebSocket | net.Socket,
         private readonly spoofedAddressAndPort: Partial<Socket.AddrAndPorts> = {}
     ) {
 
@@ -269,7 +286,7 @@ export class Socket {
         if (Socket.matchWebSocket(this.connection)) {
 
             out = new Promise<boolean>(
-                resolve => (this.connection as WebSocket)
+                resolve => (this.connection as IWebSocket)
                     .send(data, { "binary": true }, error => resolve(error ? true : false))
             );
 
@@ -496,8 +513,8 @@ export namespace Socket {
         remoteAddress: string;
     };
 
-    export function matchWebSocket(socket: net.Socket | WebSocket): socket is WebSocket {
-        return (socket as WebSocket).terminate !== undefined;
+    export function matchWebSocket(socket: net.Socket | IWebSocket): socket is IWebSocket {
+        return (socket as IWebSocket).terminate !== undefined;
     }
 
 }
