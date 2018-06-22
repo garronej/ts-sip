@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("rejection-tracker").main(__dirname, "..", "..");
+process.once("unhandledRejection", function (error) { throw error; });
 var sipLibrary = require("../lib");
 var testing_1 = require("transfer-tools/dist/lib/testing");
 //Copy paste from semasimGateway sipProxy misc

@@ -96,9 +96,13 @@ var Socket = /** @class */ (function () {
             this.connection.setMaxListeners(Infinity);
             var setAddrAndPort_1 = (function (c) { return (function () {
                 _this.__localPort__ = c.localPort;
-                _this.__remotePort__ = c.remotePort;
+                if (c.remotePort !== undefined) {
+                    _this.__remotePort__ = c.remotePort;
+                }
                 _this.__localAddress__ = c.localAddress;
-                _this.__remoteAddress__ = c.remoteAddress;
+                if (!!c.remoteAddress) {
+                    _this.__remoteAddress__ = c.remoteAddress;
+                }
             }); })(this.connection);
             setAddrAndPort_1();
             if (this.connection.localPort) {

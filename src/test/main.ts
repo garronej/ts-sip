@@ -1,4 +1,4 @@
-require("rejection-tracker").main(__dirname, "..", "..");
+process.once("unhandledRejection", error => { throw error; });
 
 import * as sipLibrary from "../lib";
 import { assertSame } from "transfer-tools/dist/lib/testing";

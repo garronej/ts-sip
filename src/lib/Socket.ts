@@ -190,9 +190,13 @@ export class Socket {
 
             const setAddrAndPort = ((c: net.Socket) => (() => {
                 this.__localPort__ = c.localPort;
-                this.__remotePort__ = c.remotePort;
+                if (c.remotePort !== undefined) {
+                    this.__remotePort__ = c.remotePort;
+                }
                 this.__localAddress__ = c.localAddress;
-                this.__remoteAddress__ = c.remoteAddress;
+                if (!!c.remoteAddress) {
+                    this.__remoteAddress__ = c.remoteAddress;
+                }
             }))(this.connection);
 
             setAddrAndPort();
@@ -404,24 +408,24 @@ export class Socket {
 
         const prefix = `[ Sip Socket ${this.protocol} ]`.yellow;
 
-        const getKey: (direction: "IN" | "OUT") =>string = 
-        (params.colorizedTraffic === "IN")?(
-            direction=> [
+        const getKey: (direction: "IN" | "OUT") => string =
+            (params.colorizedTraffic === "IN") ? (
+                direction => [
                     prefix,
                     params.remoteEndId,
                     direction === "IN" ? "=>" : "<=",
                     `${params.localEndId} ( ${params.socketId} )`,
                     "\n"
-            ].join(" ")
-        ):(
-            direction => [
-                    prefix,
-                    `${params.localEndId} ( ${params.socketId} )`,
-                    direction === "IN" ? "<=" : "=>",
-                    params.remoteEndId,
-                    "\n"
-            ].join(" ")
-        );
+                ].join(" ")
+            ) : (
+                    direction => [
+                        prefix,
+                        `${params.localEndId} ( ${params.socketId} )`,
+                        direction === "IN" ? "<=" : "=>",
+                        params.remoteEndId,
+                        "\n"
+                    ].join(" ")
+                );
 
         const getColor = (direction: "IN" | "OUT") =>
             (params.colorizedTraffic === direction) ? "yellow" : "white";
