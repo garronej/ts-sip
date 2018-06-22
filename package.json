@@ -3,7 +3,7 @@
   "description": "A collection of low level tools to work with the SIP protocol.",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "postinstall": "npm run remove-bold-color",
     "remove-bold-color": "sed -i '/bold: string;/d' ./node_modules/@types/colors/index.d.ts || true",
