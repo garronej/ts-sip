@@ -133,12 +133,12 @@ exports.Server = Server;
         var base = function (socket, methodName, isError, date) {
             if (date === void 0) { date = new Date(); }
             return [
-                date.getHours() + "h " + date.getMinutes() + "m " + date.getSeconds() + "s " + date.getMilliseconds() + "ms",
+                date.getHours() + "h" + date.getMinutes() + "m" + date.getSeconds() + "s" + date.getMilliseconds() + "ms",
                 isError ? ("[ Sip API " + idString + " Handler Error ]").red : ("[ Sip API " + idString + " Handler ]").green,
+                methodName.yellow,
                 socket.localAddress + ":" + socket.localPort + " (local)",
                 "<=",
                 socket.remoteAddress + ":" + socket.remotePort + " (remote)",
-                methodName.yellow,
                 "\n"
             ].join(" ");
         };
