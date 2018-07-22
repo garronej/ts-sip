@@ -55,8 +55,10 @@ var Socket = /** @class */ (function () {
             switch (floodType) {
                 case "headers":
                     message += "Sip Headers length > " + Socket.maxBytesHeaders + " Bytes";
+                    break;
                 case "content":
                     message += "Sip content length > " + Socket.maxContentLength + " Bytes";
+                    break;
             }
             var error = new Error(message);
             error["flood_data"] = data;

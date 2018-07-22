@@ -188,12 +188,12 @@ export namespace Server {
         let hideKeepAlive= options.hideKeepAlive || false;
 
         const base= (socket: Socket, methodName: string, isError: boolean, date= new Date()) => [
-            `${date.getHours()}h ${date.getMinutes()}m ${date.getSeconds()}s ${date.getMilliseconds()}ms`,
+            `${date.getHours()}h${date.getMinutes()}m${date.getSeconds()}s${date.getMilliseconds()}ms`,
             isError?`[ Sip API ${idString} Handler Error ]`.red:`[ Sip API ${idString} Handler ]`.green,
+            methodName.yellow,
             `${socket.localAddress}:${socket.localPort} (local)`,
             "<=",
             `${socket.remoteAddress}:${socket.remotePort} (remote)`,
-            methodName.yellow,
             "\n"
         ].join(" ");
 

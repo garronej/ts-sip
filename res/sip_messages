@@ -1,0 +1,146 @@
+
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.kZhK2Yvy8;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.kZhK2Yvy8;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=pYnlHR43w;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: gAGuiXW7UX
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>43738d30-3ad2-4196-8d9e-ed56408e2ce6</message-id><datetime>2018-07-17T17:52:48Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.6Y-awe37f;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.6Y-awe37f;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=K86FRnvdk;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: nhkm~JzPnW
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>1a67ba82-423a-4c8f-9328-387658907b02</message-id><datetime>2018-07-17T17:52:48Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.A7WUHTj0s;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.A7WUHTj0s;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=QOhLCskJp;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: cBdt4W9kq9
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>99ce8a8f-84bd-47a4-beb6-ebc6608fc606</message-id><datetime>2018-07-17T17:52:48Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.ojUw66PNe;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.ojUw66PNe;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=I2vziCJ4H;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: doSUJBUdbT
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>43286cfe-f6b7-4839-876d-550239f17870</message-id><datetime>2018-07-17T17:52:47Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.kL7qcn3x5;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.kL7qcn3x5;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=ct6XRWvre;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: m5S4nu2iKi
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xmlversion="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>20f0b595-e6e4-4e24-85ae-15c0755e9656</message-id><datetime>2018-07-17T17:52:47Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.gZpMmjhpJ;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.gZpMmjhpJ;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=q58pxMKWQ;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: TZ5ITEIr2X
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>683ed8b3-005a-479f-8262-85c02867ab77</message-id><datetime>2018-07-17T17:52:47Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.iWOm3Yr2d;rportr
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.iWOm3Yr2d;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=kY6u2W1Jp;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: gOYIMqrxIV
+Max-Forwards: 69
+Supported:replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>bc6d48dc-d4c7-4b64-8559-378e24856da0</message-id><datetime>2018-07-17T17:52:46Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.ca4TnkUdk;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.ca4TnkUdk;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=KEP1rVEf3;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: 66W0Zxxjum
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>cce5bfee-239e-4034-b227-0bbdd560995c</message-id><datetime>2018-07-17T17:52:46Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+MESSAGE sip:0636786385@semasim.com SIP/2.0
+Via: SIP/2.0/TCP 172.31.20.1:51585;branch=z9hG4bK-z9hG4bK.2JOY-PpHB;rport
+Via: SIP/2.0/TLS 192.168.0.23:35404;branch=z9hG4bK.2JOY-PpHB;rport
+From: "SIM FREE" <sip:208150113995832@semasim.com;enc_email=am9zZXBoLmdhcnJvbmUuZ2pAZ21haWwuY29t>;tag=~QYoxrWp0;connection_id=MTUzMTg2NDcyNDU2Mzo4MS42NC40Mi4xMzM6NTIzMzM_
+To:  <sip:0636786385@semasim.com>
+CSeq: 20 MESSAGE
+Call-ID: bnQkZ93U5n
+Max-Forwards: 69
+Supported: replaces, outbound, gruu
+Content-Type: message/imdn+xml
+Content-Length: 265
+Date: Tue, 17 Jul 2018 22:02:58 GMT
+User-Agent: LinphoneAndroid/3.2.8 (belle-sip/1.6.3)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<imdn xmlns="urn:ietf:params:xml:ns:imdn"><message-id>02a1129c-1d1d-4842-8b56-5839bd62ba7f</message-id><datetime>2018-07-17T17:52:45Z</datetime><display-notification><status><displayed/></status></display-notification></imdn>
+

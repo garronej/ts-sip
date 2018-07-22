@@ -49,9 +49,9 @@ export class Socket {
 
     public readonly evtPacketPreWrite = new SyncEvent<types.Packet>();
 
-    private static readonly maxBytesHeaders = 7820;
-    private static readonly maxContentLength = 24624;
-    private static readonly connectionTimeout = 3000;
+    public static readonly maxBytesHeaders = 7820;
+    public static readonly maxContentLength = 24624;
+    public static readonly connectionTimeout = 3000;
 
     private __localPort__ = NaN;
     private __remotePort__ = NaN;
@@ -116,8 +116,10 @@ export class Socket {
                 switch(floodType){
                     case "headers": 
                         message += `Sip Headers length > ${Socket.maxBytesHeaders} Bytes`;
+                        break;
                     case "content": 
                         message += `Sip content length > ${Socket.maxContentLength} Bytes`
+                        break;
                 }
 
                 let error= new Error(message);

@@ -41,9 +41,9 @@ export declare class Socket {
     /** Provided only so the error can be logged */
     readonly evtError: SyncEvent<Error>;
     readonly evtPacketPreWrite: SyncEvent<types.Packet>;
-    private static readonly maxBytesHeaders;
-    private static readonly maxContentLength;
-    private static readonly connectionTimeout;
+    static readonly maxBytesHeaders: number;
+    static readonly maxContentLength: number;
+    static readonly connectionTimeout: number;
     private __localPort__;
     private __remotePort__;
     private __localAddress__;
