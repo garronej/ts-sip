@@ -33,21 +33,53 @@ export class Socket {
     /** To store data contextually link to this socket */
     public readonly misc: any = {};
 
+    /** 
+     * 
+     * Post has_error.
+     * 
+     * Posted synchronously ( with false ) when destroy is called,
+     * OR
+     * ( with true ) when evtError is posted
+     * OR
+     * ( with false ) when underlying socket post "close"
+     * 
+     */
+    public readonly evtClose = new SyncEvent<boolean>();
+
+    /** 
+     * Posted when underlying socket connect,
+     * If underlying socket was already connected when 
+     * when constructed posted synchronously when instantiated.
+     * 
+     *  */
+    public readonly evtConnect = new VoidSyncEvent();
+
+    /** API traffic is extracted, won't be posted here */
     public readonly evtResponse = new SyncEvent<types.Response>();
     public readonly evtRequest = new SyncEvent<types.Request>();
 
-    public readonly evtClose = new SyncEvent<boolean>();
-    public readonly evtConnect = new VoidSyncEvent();
 
-    public readonly evtTimeout = new VoidSyncEvent();
-
-    /**Emit chunk of data as received by the underlying connection*/
+    /** Post chunk of data as received by the underlying connection*/
     public readonly evtData = new SyncEvent<Buffer>();
+    /** Post chunk of data as wrote on underlying socket (once write return true )*/
     public readonly evtDataOut = new SyncEvent<Buffer>();
-    /** Provided only so the error can be logged */
-    public readonly evtError = new SyncEvent<Error>();
-
+    /** Chance to modify packet before it is serialized */
     public readonly evtPacketPreWrite = new SyncEvent<types.Packet>();
+
+    /** 
+     * Provided only so the error can be logged.
+     * 
+     * Posted when underlying socket emit "error" event
+     * OR
+     * When the socket is flooded
+     * OR
+     * When the stream parser throw an Error ( possible ? )
+     * OR
+     * Socket took to much time to connect.
+     * 
+     * 
+     * */
+    public readonly evtError = new SyncEvent<Error>();
 
     public static readonly maxBytesHeaders = 7820;
     public static readonly maxContentLength = 24624;
@@ -74,7 +106,6 @@ export class Socket {
         return this.spoofedAddressAndPort.remoteAddress || this.__remoteAddress__;
     }
 
-    public haveBeedDestroyed = false;
 
     constructor(
         webSocket: IWebSocket,
@@ -111,22 +142,22 @@ export class Socket {
             },
             (data, floodType) => {
 
-                let message: string= "Flood! ";
+                let message: string = "Flood! ";
 
-                switch(floodType){
-                    case "headers": 
+                switch (floodType) {
+                    case "headers":
                         message += `Sip Headers length > ${Socket.maxBytesHeaders} Bytes`;
                         break;
-                    case "content": 
+                    case "content":
                         message += `Sip content length > ${Socket.maxContentLength} Bytes`
                         break;
                 }
 
-                let error= new Error(message);
+                let error = new Error(message);
 
-                error["flood_data"]= data;
+                error["flood_data"] = data;
 
-                error["flood_data_toString"]= data.toString("utf8");
+                error["flood_data_toString"] = data.toString("utf8");
 
                 this.connection.emit("error", error);
 
@@ -249,7 +280,11 @@ export class Socket {
             this.connection.setKeepAlive.apply(this.connection, inputs)
         ;
 
-    /** Return true if sent successfully */
+    /** 
+     * Return true if sent successfully 
+     * If socket had not connected yet throw error.
+     * WARNING: If socket has closed will never resolve!
+     * */
     public write(sipPacket: types.Packet): boolean | Promise<boolean> {
 
         if (!this.evtConnect.postCount) {
@@ -346,16 +381,26 @@ export class Socket {
 
     }
 
-    public destroy() {
 
-        /*
-        this.evtData.detach();
-        this.evtPacket.detach();
-        this.evtResponse.detach();
-        this.evtRequest.detach();
-        */
+
+    /** Readonly, true if destroy have been called ( not called internally ) */
+    public haveBeedDestroyed = false;
+
+    /** Readonly, message provide when and if destroy have been called */
+    public destroyReason: string | undefined = undefined;
+
+    /** 
+     * Destroy underlying connection, evtClose is posted synchronously.
+     * No more traffic will occur on the socket.
+     * */
+    public destroy(reason?: string) {
+
+        if (this.haveBeedDestroyed) {
+            return;
+        }
 
         this.haveBeedDestroyed = true;
+        this.destroyReason = reason;
 
         this.connection.emit("close", false);
 
@@ -489,10 +534,34 @@ export class Socket {
 
         if (!!params.close) {
 
-            let getMessage = () => [
-                `${prefix} ${params.socketId} closed`,
-                this.haveBeedDestroyed ? "( locally destroyed )" : ""
-            ].join(" ");
+            const getMessage = () => {
+
+                let message = `${prefix} ${params.socketId} closed, `;
+
+                if (this.haveBeedDestroyed) {
+
+                    message += ".destroy have been called, ";
+
+                    if (!!this.destroyReason) {
+
+                        message += `reason: ${this.destroyReason}`;
+
+                    } else {
+
+                        message += "no reason have been provided.";
+
+                    }
+
+
+                } else {
+
+                    message += ".destroy NOT called.";
+
+                }
+
+                return message;
+
+            };
 
             if (!!this.evtClose.postCount) {
 
@@ -500,7 +569,7 @@ export class Socket {
 
             } else {
 
-                this.evtClose.attachOnce(hasError => log(getMessage()));
+                this.evtClose.attachOnce(() => log(getMessage()));
 
             }
 

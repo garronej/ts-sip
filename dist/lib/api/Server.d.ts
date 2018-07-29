@@ -19,9 +19,9 @@ export declare namespace Server {
     type Logger = {
         onMethodNotImplemented(methodName: string, socket: Socket): void;
         onRequestMalformed(methodName: string, rawParams: Buffer, socket: Socket): void;
-        onHandlerThrowError(methodName: string, params: any, error: Error, socket: Socket): void;
-        onHandlerReturnNonStringifiableResponse(methodName: string, params: any, response: any, socket: Socket): void;
-        onRequestSuccessfullyHandled(methodName: string, params: any, response: any, socket: Socket, rsvDate: Date): void;
+        onHandlerThrowError(methodName: string, params: any, error: Error, socket: Socket, duration: number): void;
+        onHandlerReturnNonStringifiableResponse(methodName: string, params: any, response: any, socket: Socket, duration: number): void;
+        onRequestSuccessfullyHandled(methodName: string, params: any, response: any, socket: Socket, duration: number, prDidWriteSuccessfully: Promise<boolean> | boolean): void;
     };
     function getDefaultLogger(options?: Partial<{
         idString: string;

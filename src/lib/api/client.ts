@@ -13,6 +13,8 @@ export async function sendRequest<Params, Response>(
     } = {}
 ): Promise<Response> {
 
+    const mkDestroyMsg = (message: string) => `( calling remote API ) ${message}`;
+
     let errorLogger: Partial<ErrorLogger> = socket.misc[enableErrorLogging.miscKey] || {};
 
     let sipRequest = ApiMessage.Request.buildSip(methodName, params);
@@ -31,7 +33,9 @@ export async function sendRequest<Params, Response>(
 
         }
 
-        socket.destroy();
+        socket.destroy(
+            mkDestroyMsg("write did not return true (request not sent)")
+        );
 
         throw new SendRequestError(
             methodName,
@@ -75,7 +79,9 @@ export async function sendRequest<Params, Response>(
 
             }
 
-            socket.destroy();
+            socket.destroy(
+                mkDestroyMsg( "Request timed out")
+            );
 
         } else {
 
@@ -118,7 +124,7 @@ export async function sendRequest<Params, Response>(
 
         }
 
-        socket.destroy();
+        socket.destroy("Response is malformed");
 
         throw sendRequestError;
 
@@ -229,10 +235,10 @@ export function getDefaultErrorLogger(
 
     const base = (socket: Socket, methodName: string, params: any) => [
         `[ Sip API ${idString} call Error ]`.red,
+        methodName,
         `${socket.localAddress}:${socket.localPort} (local)`,
         "=>",
         `${socket.remoteAddress}:${socket.remotePort} (remote)`,
-        methodName,
         "\n",
         `params: ${JSON.stringify(params)}\n`,
     ].join(" ");

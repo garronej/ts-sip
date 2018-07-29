@@ -14,22 +14,52 @@ var Socket = /** @class */ (function () {
         this.spoofedAddressAndPort = spoofedAddressAndPort;
         /** To store data contextually link to this socket */
         this.misc = {};
+        /**
+         *
+         * Post has_error.
+         *
+         * Posted synchronously ( with false ) when destroy is called,
+         * OR
+         * ( with true ) when evtError is posted
+         * OR
+         * ( with false ) when underlying socket post "close"
+         *
+         */
+        this.evtClose = new ts_events_extended_1.SyncEvent();
+        /**
+         * Posted when underlying socket connect,
+         * If underlying socket was already connected when
+         * when constructed posted synchronously when instantiated.
+         *
+         *  */
+        this.evtConnect = new ts_events_extended_1.VoidSyncEvent();
+        /** API traffic is extracted, won't be posted here */
         this.evtResponse = new ts_events_extended_1.SyncEvent();
         this.evtRequest = new ts_events_extended_1.SyncEvent();
-        this.evtClose = new ts_events_extended_1.SyncEvent();
-        this.evtConnect = new ts_events_extended_1.VoidSyncEvent();
-        this.evtTimeout = new ts_events_extended_1.VoidSyncEvent();
-        /**Emit chunk of data as received by the underlying connection*/
+        /** Post chunk of data as received by the underlying connection*/
         this.evtData = new ts_events_extended_1.SyncEvent();
+        /** Post chunk of data as wrote on underlying socket (once write return true )*/
         this.evtDataOut = new ts_events_extended_1.SyncEvent();
-        /** Provided only so the error can be logged */
-        this.evtError = new ts_events_extended_1.SyncEvent();
+        /** Chance to modify packet before it is serialized */
         this.evtPacketPreWrite = new ts_events_extended_1.SyncEvent();
+        /**
+         * Provided only so the error can be logged.
+         *
+         * Posted when underlying socket emit "error" event
+         * OR
+         * When the socket is flooded
+         * OR
+         * When the stream parser throw an Error ( possible ? )
+         * OR
+         * Socket took to much time to connect.
+         *
+         *
+         * */
+        this.evtError = new ts_events_extended_1.SyncEvent();
         this.__localPort__ = NaN;
         this.__remotePort__ = NaN;
         this.__localAddress__ = "";
         this.__remoteAddress__ = "";
-        this.haveBeedDestroyed = false;
         this.setKeepAlive = function () {
             var inputs = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -39,6 +69,10 @@ var Socket = /** @class */ (function () {
                 undefined :
                 _this.connection.setKeepAlive.apply(_this.connection, inputs);
         };
+        /** Readonly, true if destroy have been called ( not called internally ) */
+        this.haveBeedDestroyed = false;
+        /** Readonly, message provide when and if destroy have been called */
+        this.destroyReason = undefined;
         this.loggerEvt = {};
         var streamParser = core.makeStreamParser(function (sipPacket) {
             if (!!_this.loggerEvt.evtPacketIn) {
@@ -153,7 +187,11 @@ var Socket = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    /** Return true if sent successfully */
+    /**
+     * Return true if sent successfully
+     * If socket had not connected yet throw error.
+     * WARNING: If socket has closed will never resolve!
+     * */
     Socket.prototype.write = function (sipPacket) {
         var _this = this;
         if (!this.evtConnect.postCount) {
@@ -207,14 +245,16 @@ var Socket = /** @class */ (function () {
         });
         return out;
     };
-    Socket.prototype.destroy = function () {
-        /*
-        this.evtData.detach();
-        this.evtPacket.detach();
-        this.evtResponse.detach();
-        this.evtRequest.detach();
-        */
+    /**
+     * Destroy underlying connection, evtClose is posted synchronously.
+     * No more traffic will occur on the socket.
+     * */
+    Socket.prototype.destroy = function (reason) {
+        if (this.haveBeedDestroyed) {
+            return;
+        }
         this.haveBeedDestroyed = true;
+        this.destroyReason = reason;
         this.connection.emit("close", false);
     };
     Object.defineProperty(Socket.prototype, "protocol", {
@@ -280,15 +320,27 @@ var Socket = /** @class */ (function () {
             }
         }
         if (!!params.close) {
-            var getMessage_1 = function () { return [
-                prefix + " " + params.socketId + " closed",
-                _this.haveBeedDestroyed ? "( locally destroyed )" : ""
-            ].join(" "); };
+            var getMessage_1 = function () {
+                var message = prefix + " " + params.socketId + " closed, ";
+                if (_this.haveBeedDestroyed) {
+                    message += ".destroy have been called, ";
+                    if (!!_this.destroyReason) {
+                        message += "reason: " + _this.destroyReason;
+                    }
+                    else {
+                        message += "no reason have been provided.";
+                    }
+                }
+                else {
+                    message += ".destroy NOT called.";
+                }
+                return message;
+            };
             if (!!this.evtClose.postCount) {
                 log(getMessage_1());
             }
             else {
-                this.evtClose.attachOnce(function (hasError) { return log(getMessage_1()); });
+                this.evtClose.attachOnce(function () { return log(getMessage_1()); });
             }
         }
     };

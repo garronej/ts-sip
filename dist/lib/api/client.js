@@ -50,10 +50,11 @@ var ApiMessage_1 = require("./ApiMessage");
 function sendRequest(socket, methodName, params, extra) {
     if (extra === void 0) { extra = {}; }
     return __awaiter(this, void 0, void 0, function () {
-        var errorLogger, sipRequest, actionId, writeSuccess, sipRequestResponse, timeoutValue, error_1, sendRequestError, response, sendRequestError;
+        var mkDestroyMsg, errorLogger, sipRequest, actionId, writeSuccess, sipRequestResponse, timeoutValue, error_1, sendRequestError, response, sendRequestError;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    mkDestroyMsg = function (message) { return "( calling remote API ) " + message; };
                     errorLogger = socket.misc[enableErrorLogging.miscKey] || {};
                     sipRequest = ApiMessage_1.ApiMessage.Request.buildSip(methodName, params);
                     misc.buildNextHopPacket.pushVia(socket, sipRequest);
@@ -65,7 +66,7 @@ function sendRequest(socket, methodName, params, extra) {
                         if (!!errorLogger.onRequestNotSent) {
                             errorLogger.onRequestNotSent(methodName, params, socket);
                         }
-                        socket.destroy();
+                        socket.destroy(mkDestroyMsg("write did not return true (request not sent)"));
                         throw new SendRequestError(methodName, params, "CANNOT SEND REQUEST");
                     }
                     timeoutValue = extra.timeout || 5 * 60 * 1000;
@@ -87,7 +88,7 @@ function sendRequest(socket, methodName, params, extra) {
                         if (!!errorLogger.onRequestTimeout) {
                             errorLogger.onRequestTimeout(methodName, params, timeoutValue, socket);
                         }
-                        socket.destroy();
+                        socket.destroy(mkDestroyMsg("Request timed out"));
                     }
                     else {
                         if (!!errorLogger.onClosedConnection) {
@@ -105,7 +106,7 @@ function sendRequest(socket, methodName, params, extra) {
                         if (!!errorLogger.onMalformedResponse) {
                             errorLogger.onMalformedResponse(methodName, params, misc.getPacketContent(sipRequestResponse), socket);
                         }
-                        socket.destroy();
+                        socket.destroy("Response is malformed");
                         throw sendRequestError;
                     }
                     return [2 /*return*/, response];
@@ -187,10 +188,10 @@ function getDefaultErrorLogger(options) {
     var log = options.log || console.log.bind(console);
     var base = function (socket, methodName, params) { return [
         ("[ Sip API " + idString + " call Error ]").red,
+        methodName,
         socket.localAddress + ":" + socket.localPort + " (local)",
         "=>",
         socket.remoteAddress + ":" + socket.remotePort + " (remote)",
-        methodName,
         "\n",
         "params: " + JSON.stringify(params) + "\n",
     ].join(" "); };

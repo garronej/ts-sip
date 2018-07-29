@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var misc = require("../misc");
 var ApiMessage_1 = require("./ApiMessage");
+var util = require("util");
 require("colors");
 var Server = /** @class */ (function () {
     function Server(handlers, logger) {
@@ -58,12 +59,13 @@ var Server = /** @class */ (function () {
     /** Can be called as soon as the socket is created ( no need to wait for connection ) */
     Server.prototype.startListening = function (socket) {
         var _this = this;
+        var mkDestroyMsg = function (message) { return "( handling local API ) " + message; };
         socket.evtRequest.attachExtract(function (sipRequest) { return ApiMessage_1.ApiMessage.Request.matchSip(sipRequest); }, function (sipRequest) { return __awaiter(_this, void 0, void 0, function () {
-            var rsvDate, methodName, _a, handler, sanityCheck, params, response, error_1, sipRequestResp;
+            var rcvTime, methodName, _a, handler, sanityCheck, params, response, error, _error_1, duration, sipRequestResp, prDidWriteSuccessfully;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        rsvDate = new Date();
+                        rcvTime = Date.now();
                         methodName = ApiMessage_1.ApiMessage.Request.readMethodName(sipRequest);
                         try {
                             _a = this.handlers[methodName], handler = _a.handler, sanityCheck = _a.sanityCheck;
@@ -72,7 +74,7 @@ var Server = /** @class */ (function () {
                             if (!!this.logger.onMethodNotImplemented) {
                                 this.logger.onMethodNotImplemented(methodName, socket);
                             }
-                            socket.destroy();
+                            socket.destroy(mkDestroyMsg("method " + methodName + " not implemented"));
                             return [2 /*return*/];
                         }
                         try {
@@ -82,9 +84,10 @@ var Server = /** @class */ (function () {
                             if (!!this.logger.onRequestMalformed) {
                                 this.logger.onRequestMalformed(methodName, misc.getPacketContent(sipRequest), socket);
                             }
-                            socket.destroy();
+                            socket.destroy(mkDestroyMsg("received malformed request params for method " + methodName));
                             return [2 /*return*/];
                         }
+                        error = undefined;
                         _b.label = 1;
                     case 1:
                         _b.trys.push([1, 3, , 4]);
@@ -93,28 +96,43 @@ var Server = /** @class */ (function () {
                         response = _b.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        error_1 = _b.sent();
-                        if (!!this.logger.onHandlerThrowError) {
-                            this.logger.onHandlerThrowError(methodName, params, error_1, socket);
-                        }
-                        socket.destroy();
-                        return [2 /*return*/];
+                        _error_1 = _b.sent();
+                        error = _error_1;
+                        return [3 /*break*/, 4];
                     case 4:
+                        duration = Date.now() - rcvTime;
+                        if (!!error) {
+                            if (!!this.logger.onHandlerThrowError) {
+                                this.logger.onHandlerThrowError(methodName, params, error, socket, duration);
+                            }
+                            socket.destroy(mkDestroyMsg("Handler thrown error"));
+                            return [2 /*return*/];
+                        }
                         try {
                             sipRequestResp = ApiMessage_1.ApiMessage.Response.buildSip(ApiMessage_1.ApiMessage.readActionId(sipRequest), response);
                         }
                         catch (_e) {
                             if (!!this.logger.onHandlerReturnNonStringifiableResponse) {
-                                this.logger.onHandlerReturnNonStringifiableResponse(methodName, params, response, socket);
+                                this.logger.onHandlerReturnNonStringifiableResponse(methodName, params, response, socket, duration);
                             }
-                            socket.destroy();
+                            socket.destroy(mkDestroyMsg("Handler returned non stringifiable response"));
                             return [2 /*return*/];
                         }
-                        if (!!this.logger.onRequestSuccessfullyHandled) {
-                            this.logger.onRequestSuccessfullyHandled(methodName, params, response, socket, rsvDate);
-                        }
                         misc.buildNextHopPacket.pushVia(socket, sipRequestResp);
-                        socket.write(sipRequestResp);
+                        if (socket.evtClose.postCount === 0) {
+                            prDidWriteSuccessfully = socket.write(sipRequestResp);
+                        }
+                        else {
+                            prDidWriteSuccessfully = false;
+                        }
+                        if (!!this.logger.onRequestSuccessfullyHandled) {
+                            this.logger.onRequestSuccessfullyHandled(methodName, params, response, socket, duration, prDidWriteSuccessfully);
+                        }
+                        return [4 /*yield*/, prDidWriteSuccessfully];
+                    case 5:
+                        if (!(_b.sent())) {
+                            socket.destroy(mkDestroyMsg("write(response) did not return true"));
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -130,45 +148,31 @@ exports.Server = Server;
         var log = options.log || console.log.bind(console);
         var displayOnlyErrors = options.displayOnlyErrors || false;
         var hideKeepAlive = options.hideKeepAlive || false;
-        var base = function (socket, methodName, isError, date) {
-            if (date === void 0) { date = new Date(); }
-            return [
-                date.getHours() + "h" + date.getMinutes() + "m" + date.getSeconds() + "s" + date.getMilliseconds() + "ms",
-                isError ? ("[ Sip API " + idString + " Handler Error ]").red : ("[ Sip API " + idString + " Handler ]").green,
-                methodName.yellow,
-                socket.localAddress + ":" + socket.localPort + " (local)",
-                "<=",
-                socket.remoteAddress + ":" + socket.remotePort + " (remote)",
-                "\n"
-            ].join(" ");
+        var common = function (socket, methodName, duration, p, r, concat) {
+            var isSocketClosedAndNotDestroyed = !!socket.evtClose.postCount && !socket.haveBeedDestroyed;
+            var isError = (r === undefined) || isSocketClosedAndNotDestroyed;
+            if (!isError && displayOnlyErrors) {
+                return;
+            }
+            if (hideKeepAlive && ApiMessage_1.keepAlive.methodName === methodName) {
+                return;
+            }
+            log([
+                (isError ? "[ Sip API handler Error ]".red : "[ Sip API handler ]".green) + " " + idString + ":" + methodName.yellow,
+                ((duration !== undefined) ? " " + duration + "ms" : "") + "\n",
+                socket.localAddress + ":" + socket.localPort + " (local) <= " + socket.remoteAddress + ":" + socket.remotePort + " (remote)\n",
+                isSocketClosedAndNotDestroyed ? "Socket closed while processing request ( not locally destroyed )\n" : "",
+                !!p ? "---Params:".blue + "   " + JSON.stringify(p.params) + "\n" : "",
+                !!r ? "---Response:".blue + "   " + JSON.stringify(r.response) + "\n" : "",
+                concat
+            ].join(""));
         };
         return {
-            "onMethodNotImplemented": function (methodName, socket) {
-                return log(base(socket, methodName, true) + "Not implemented");
-            },
-            "onRequestMalformed": function (methodName, rawParams, socket) {
-                return log(base(socket, methodName, true) + "Request malformed", { "rawParams": "" + rawParams });
-            },
-            "onHandlerThrowError": function (methodName, params, error, socket) {
-                return log(base(socket, methodName, true) + "Handler throw error", error);
-            },
-            "onHandlerReturnNonStringifiableResponse": function (methodName, params, response, socket) {
-                return log(base(socket, methodName, true) + "Non stringifiable resp", { response: response });
-            },
-            "onRequestSuccessfullyHandled": function (methodName, params, response, socket, rsvDate) {
-                if (displayOnlyErrors) {
-                    return;
-                }
-                if (hideKeepAlive && ApiMessage_1.keepAlive.methodName === methodName) {
-                    return;
-                }
-                log([
-                    base(socket, methodName, false, rsvDate),
-                    "---Params:".blue + "   " + JSON.stringify(params) + "\n",
-                    "---Response:".blue + " " + JSON.stringify(response) + "\n",
-                    "---Runtime:".yellow + "  " + (Date.now() - rsvDate.getTime()) + "ms\n"
-                ].join(""));
-            }
+            "onMethodNotImplemented": function (methodName, socket) { return common(socket, methodName, undefined, undefined, undefined, "Not implemented"); },
+            "onRequestMalformed": function (methodName, rawParams, socket) { return common(socket, methodName, undefined, undefined, undefined, "Request malformed " + util.format({ "rawParams": "" + rawParams })); },
+            "onHandlerThrowError": function (methodName, params, error, socket, duration) { return common(socket, methodName, duration, { params: params }, undefined, "Handler thrown error: " + util.format(error)); },
+            "onHandlerReturnNonStringifiableResponse": function (methodName, params, response, socket, duration) { return common(socket, methodName, duration, { params: params }, undefined, "Non stringifiable resp " + util.format({ response: response })); },
+            "onRequestSuccessfullyHandled": function (methodName, params, response, socket, duration) { return common(socket, methodName, duration, { params: params }, { response: response }); }
         };
     }
     Server.getDefaultLogger = getDefaultLogger;
