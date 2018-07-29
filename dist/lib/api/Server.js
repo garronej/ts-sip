@@ -105,7 +105,7 @@ var Server = /** @class */ (function () {
                             if (!!this.logger.onHandlerThrowError) {
                                 this.logger.onHandlerThrowError(methodName, params, error, socket, duration);
                             }
-                            socket.destroy(mkDestroyMsg("Handler thrown error: " + error.message));
+                            socket.destroy(mkDestroyMsg("Handler thrown error: " + (error instanceof Error ? error.message : error)));
                             return [2 /*return*/];
                         }
                         try {

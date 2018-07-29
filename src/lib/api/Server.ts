@@ -118,7 +118,7 @@ export class Server {
                     }
 
                     socket.destroy(
-                        mkDestroyMsg(`Handler thrown error: ${error.message}`)
+                        mkDestroyMsg(`Handler thrown error: ${error instanceof Error ? error.message: error}`)
                     );
 
                     return;
