@@ -1,31 +1,18 @@
 import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
-import * as net from "net";
 
 import * as types from "./types";
 import * as core from "./core";
 import * as misc from "./misc";
 
 import { sipMethodName as apiSipMethodName } from "./api/ApiMessage";
+import {
+    IConnection,
+    NetSocketConnection,
+    WebSocketConnection,
+    AddrAndPorts
+} from "./IConnection";
 
 import "colors";
-
-/**
- * This is just a phony interface so we do not have to include @types/ws
- * as production dependency.
- * 
- * To see the real def:
- * 
- * import * as WebSocket from "ws"; 
- * 
- * **/
-export interface IWebSocket {
-    emit: any;
-    on: any;
-    once: any;
-    terminate(): void;
-    send(data: any, cb?: (err: Error) => void): void;
-    send(data: any, options: { mask?: boolean; binary?: boolean; compress?: boolean; fin?: boolean }, cb?: (err: Error) => void): void;
-}
 
 //TODO: make a function to test if message are well formed: have from, to via ect.
 export class Socket {
@@ -73,7 +60,7 @@ export class Socket {
      * OR
      * When the socket is flooded
      * OR
-     * When the stream parser throw an Error ( possible ? )
+     * When the stream parser throw an Error ( possible ? YES! )
      * OR
      * Socket took to much time to connect.
      * 
@@ -85,42 +72,64 @@ export class Socket {
     public static readonly maxContentLength = 24624;
     public static readonly connectionTimeout = 3000;
 
-    private __localPort__ = NaN;
-    private __remotePort__ = NaN;
-    private __localAddress__ = "";
-    private __remoteAddress__ = "";
 
     public get localPort() {
-        return this.spoofedAddressAndPort.localPort || this.__localPort__;
+        return this.spoofedAddressAndPort.localPort || this.connection.localPort;
     }
 
     public get remotePort() {
-        return this.spoofedAddressAndPort.remotePort || this.__remotePort__;
+        return this.spoofedAddressAndPort.remotePort || this.connection.remotePort;
     }
 
     public get localAddress() {
-        return this.spoofedAddressAndPort.localAddress || this.__localAddress__;
+        return this.spoofedAddressAndPort.localAddress || this.connection.localAddress;
     }
 
     public get remoteAddress() {
-        return this.spoofedAddressAndPort.remoteAddress || this.__remoteAddress__;
+        return this.spoofedAddressAndPort.remoteAddress || this.connection.remoteAddress;
     }
 
+    private readonly connection: IConnection;
+    private readonly spoofedAddressAndPort: Partial<AddrAndPorts>;
+
+    private openTimer: NodeJS.Timer = null as any;
 
     constructor(
-        webSocket: IWebSocket,
-        addrAndPorts: Socket.AddrAndPorts
+        webSocket: WebSocket | import("ws"),
+        addrAndPorts: AddrAndPorts
     );
     constructor(
-        socket: net.Socket,
-        spoofedAddrAndPorts?: Partial<Socket.AddrAndPorts>
+        netSocket: import("net").Socket,
+        spoofedAddrAndPorts?: Partial<AddrAndPorts>
     );
     constructor(
-        private readonly connection: IWebSocket | net.Socket,
-        private readonly spoofedAddressAndPort: Partial<Socket.AddrAndPorts> = {}
+        socket: WebSocket | import("ws") | import("net").Socket,
+        arg: any
     ) {
 
-        let streamParser = core.makeStreamParser(
+        const matchNetSocket = (socket: WebSocket | import("ws") | import("net").Socket): socket is import("net").Socket => {
+            return (socket as import("net").Socket).destroy !== undefined;
+        };
+
+        if (matchNetSocket(socket)) {
+
+            const spoofedAddrAndPorts: Partial<AddrAndPorts> = arg || {};
+
+            this.connection = new NetSocketConnection(socket);
+
+            this.spoofedAddressAndPort = spoofedAddrAndPorts;
+
+        } else {
+
+            const addrAndPort: AddrAndPorts = arg;
+
+            this.connection = new WebSocketConnection(socket, addrAndPort);
+
+            this.spoofedAddressAndPort = {};
+
+        }
+
+        const streamParser = core.makeStreamParser(
             sipPacket => {
 
                 if (!!this.loggerEvt.evtPacketIn) {
@@ -140,145 +149,81 @@ export class Socket {
                 }
 
             },
-            (data, floodType) => {
-
-                let message: string = "Flood! ";
-
-                switch (floodType) {
-                    case "headers":
-                        message += `Sip Headers length > ${Socket.maxBytesHeaders} Bytes`;
-                        break;
-                    case "content":
-                        message += `Sip content length > ${Socket.maxContentLength} Bytes`
-                        break;
-                }
-
-                let error = new Error(message);
-
-                error["flood_data"] = data;
-
-                error["flood_data_toString"] = data.toString("utf8");
-
-                this.connection.emit("error", error);
-
-            },
+            (floodError) => this.connection.emit("error", floodError),
             Socket.maxBytesHeaders,
             Socket.maxContentLength
         );
 
-        (this.connection as any)
-            .once("error", obj => {
+        this.connection
+            .once("error", error => {
 
-                this.evtError.post(Socket.matchWebSocket(this.connection) ? obj.error : obj);
+                this.evtError.post(error);
 
-                this.connection.emit("close", true)
+                this.connection.emit("close", true);
 
             })
             .once("close", had_error => {
 
+                //NOTE: 99.9% already cleared.
+                clearTimeout(this.openTimer);
 
-                if (Socket.matchWebSocket(this.connection)) {
-                    this.connection.terminate();
-                } else {
-                    this.connection.destroy();
-                }
+                this.connection.destroy();
 
-                this.evtClose.post(had_error === true);
+                this.evtClose.post(had_error);
 
             })
-            .on(
-                Socket.matchWebSocket(this.connection) ? "message" : "data",
-                (data: Buffer | string) => {
+            .on("data", data => {
 
-                    if (typeof data === "string") {
+                this.evtData.post(data);
 
-                        data = Buffer.from(data, "utf8");
+                try {
 
-                    }
+                    streamParser(data);
 
-                    this.evtData.post(data);
+                } catch (error) {
 
+                    this.connection.emit("error", error);
 
-                    try {
+                }
 
-                        streamParser(data);
+            })
+            ;
 
-                    } catch (error) {
+        if (!this.connection.isConnecting()) {
 
-                        this.connection.emit("error", error);
+            this.evtConnect.post();
 
-                    }
+        } else {
 
+            this.openTimer = setTimeout(() => {
+
+                if (!!this.evtClose.postCount) {
+
+                    return;
+
+                }
+
+                this.connection.emit(
+                    "error",
+                    new Error(`Sip socket connection timeout after ${Socket.connectionTimeout}`)
+                );
+
+            }, Socket.connectionTimeout);
+
+            this.connection.once(
+                "connect",
+                () => {
+
+                    clearTimeout(this.openTimer);
+
+                    this.evtConnect.post();
 
                 }
             );
 
-        if (Socket.matchWebSocket(this.connection)) {
-
-            this.evtConnect.post(); //For post count
-
-        } else {
-
-            this.connection.setMaxListeners(Infinity)
-
-            const setAddrAndPort = ((c: net.Socket) => (() => {
-                this.__localPort__ = c.localPort;
-                if (c.remotePort !== undefined) {
-                    this.__remotePort__ = c.remotePort;
-                }
-                this.__localAddress__ = c.localAddress;
-                if (!!c.remoteAddress) {
-                    this.__remoteAddress__ = c.remoteAddress;
-                }
-            }))(this.connection);
-
-            setAddrAndPort();
-
-            if (this.connection.localPort) {
-
-                this.evtConnect.post(); //For post count
-
-            } else {
-
-                let timer = setTimeout(() => {
-
-                    if (!!this.evtClose.postCount) {
-
-                        return;
-
-                    }
-
-                    this.connection.emit(
-                        "error",
-                        new Error(`Sip socket connection timeout after ${Socket.connectionTimeout}`)
-                    );
-
-                }, Socket.connectionTimeout);
-
-                this.connection.once(
-                    this.connection["encrypted"] ? "secureConnect" : "connect",
-                    () => {
-
-                        clearTimeout(timer);
-
-                        setAddrAndPort();
-
-                        this.evtConnect.post();
-
-                    }
-                );
-
-            }
-
         }
 
     }
-
-    public readonly setKeepAlive: net.Socket['setKeepAlive'] = (...inputs) =>
-        Socket.matchWebSocket(this.connection) ?
-            undefined :
-            this.connection.setKeepAlive.apply(this.connection, inputs)
-        ;
 
     /** 
      * Return true if sent successfully 
@@ -299,14 +244,13 @@ export class Socket {
 
         }
 
-
         if (misc.matchRequest(sipPacket)) {
 
-            let maxForwardsHeaderValue = sipPacket.headers["max-forwards"];
+            const maxForwardsHeaderValue = sipPacket.headers["max-forwards"];
 
             if (maxForwardsHeaderValue !== undefined) {
 
-                let maxForwards = parseInt(maxForwardsHeaderValue);
+                const maxForwards = parseInt(maxForwardsHeaderValue);
 
                 if (maxForwards < 0) {
                     return false;
@@ -320,67 +264,40 @@ export class Socket {
 
         /*NOTE: this could throw but it would mean that it's an error
         on our part as a packet that have been parsed should be stringifiable.*/
-        let data = core.toData(sipPacket);
+        const data = core.toData(sipPacket);
 
-        let out: Promise<boolean> | true;
+        let isSent: boolean | undefined = undefined;
 
-        if (Socket.matchWebSocket(this.connection)) {
+        const prIsSent = new Promise<boolean>(
+            resolve => this.connection.write(data, _isSent => {
 
-            out = new Promise<boolean>(
-                resolve => (this.connection as IWebSocket)
-                    .send(data, { "binary": true }, error => resolve(error ? true : false))
-            );
+                isSent = _isSent;
 
-        } else {
+                resolve(isSent)
 
-            let flushed = this.connection.write(data);
+            })
+        );
 
-            if (flushed) {
+        prIsSent.then(isSent => {
 
-                out = true;
+            if (!isSent) {
+                return;
+            }
 
-            } else {
+            if (!!this.loggerEvt.evtPacketOut) {
 
-                let boundTo = [];
-
-                out = Promise.race([
-                    new Promise<false>(
-                        resolve => this.evtClose.attachOnce(boundTo, () => resolve(false))
-                    ),
-                    new Promise<true>(
-                        resolve => (this.connection as net.Socket).once("drain", () => {
-                            this.evtClose.detach(boundTo);
-                            resolve(true);
-                        })
-                    )
-                ]);
+                this.loggerEvt.evtPacketOut.post(sipPacket);
 
             }
 
-        }
+            this.evtDataOut.post(data);
 
-        ((out instanceof Promise) ? out : Promise.resolve(true))
-            .then(isSent => {
 
-                if (isSent) {
+        });
 
-                    if (!!this.loggerEvt.evtPacketOut) {
-
-                        this.loggerEvt.evtPacketOut.post(sipPacket);
-
-                    }
-
-                    this.evtDataOut.post(data);
-
-                }
-
-            })
-            ;
-
-        return out;
+        return isSent !== undefined ? isSent : prIsSent;
 
     }
-
 
 
     /** Readonly, true if destroy have been called ( not called internally ) */
@@ -406,29 +323,17 @@ export class Socket {
 
     }
 
-    public get protocol(): "TCP" | "TLS" | "WSS" {
+    public get protocol(): types.TransportProtocol {
 
-        if (Socket.matchWebSocket(this.connection)) {
-            return "WSS";
-        } else {
-            return this.connection["encrypted"] ? "TLS" : "TCP";
-        }
+        return this.connection.protocol;
 
     }
 
     /** Return a clone of the packet ready for next hop */
-    public buildNextHopPacket(
-        sipRequest: types.Request
-    ): types.Request;
-    public buildNextHopPacket(
-        sipResponse: types.Response
-    ): types.Response;
-    public buildNextHopPacket(
-        sipPacket: types.Packet
-    ): types.Packet;
-    public buildNextHopPacket(
-        sipPacket: types.Packet
-    ): types.Packet {
+    public buildNextHopPacket(sipRequest: types.Request): types.Request;
+    public buildNextHopPacket(sipResponse: types.Response): types.Response;
+    public buildNextHopPacket(sipPacket: types.Packet): types.Packet;
+    public buildNextHopPacket(sipPacket: types.Packet): types.Packet {
         return misc.buildNextHopPacket(this, sipPacket);
     }
 
@@ -511,7 +416,7 @@ export class Socket {
         if (!!params.error) {
 
             this.evtError.attachOnce(error =>
-                log(`${prefix} ${params.socketId} Error`.red, error)
+                log(`${prefix} ${params.socketId} Error`.red, error.toString(), error.stack)
             );
 
         }
@@ -552,7 +457,6 @@ export class Socket {
 
                     }
 
-
                 } else {
 
                     message += ".destroy NOT called.";
@@ -579,17 +483,3 @@ export class Socket {
 
 }
 
-export namespace Socket {
-
-    export type AddrAndPorts = {
-        localPort: number;
-        remotePort: number;
-        localAddress: string;
-        remoteAddress: string;
-    };
-
-    export function matchWebSocket(socket: net.Socket | IWebSocket): socket is IWebSocket {
-        return (socket as IWebSocket).terminate !== undefined;
-    }
-
-}

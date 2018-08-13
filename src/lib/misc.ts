@@ -14,6 +14,7 @@ export function matchRequest(sipPacket: types.Packet): sipPacket is types.Reques
 }
 
 //TODO: optimize
+/** Can throw */
 export function clonePacket(sipRequest: types.Request): types.Request;
 export function clonePacket(sipResponse: types.Response): types.Response;
 export function clonePacket(sipPacket: types.Packet): types.Packet;
@@ -209,7 +210,7 @@ export function isResponse(
 }
 
 
-/** Return a clone of the packet ready for next hop */
+/** Return a clone of the packet ready for next hop, can throw */
 export function buildNextHopPacket(
     socket: buildNextHopPacket.ISocket,
     sipRequestAsReceived: types.Request

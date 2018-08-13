@@ -1,19 +1,23 @@
-import * as sip from "sip";
-import * as _sdp_ from "sip/sdp";
+import * as sip from "./core/sip";
+import * as _sdp_ from "./core/sdp";
 import * as types from "./types";
 
-export function makeStreamParser( 
+export function makeStreamParser(
     handler: (sipPacket: types.Packet) => void,
-    onFlood: (data: Buffer, floodType: "headers" | "content" ) => void,
+    onFlood: (floodError: makeStreamParser.FloodError) => void,
     maxBytesHeaders: number,
     maxContentLength: number
 ): ((data: Buffer) => void) {
 
-    let streamParser= sip.makeStreamParser(
+    let streamParser = sip.makeStreamParser(
         handler,
-        (dataAsBinaryStr, floodType)=> onFlood(
-            Buffer.from(dataAsBinaryStr, "binary"), 
-            floodType
+        (dataAsBinaryStr, floodType) => onFlood(
+            new makeStreamParser.FloodError(
+                floodType,
+                Buffer.from(dataAsBinaryStr, "binary"),
+                maxBytesHeaders,
+                maxContentLength
+            )
         ),
         maxBytesHeaders,
         maxContentLength,
@@ -23,48 +27,61 @@ export function makeStreamParser(
 
 }
 
+export namespace makeStreamParser {
 
-export function toData(sipPacket: types.Packet): Buffer {
+    export class FloodError extends Error {
+        constructor(
+            public readonly floodType: "HEADERS" | "CONTENT",
+            public readonly data: Buffer,
+            public maxBytesHeaders: number,
+            public maxContentLength: number
+        ) {
+            super((() => {
 
-    let dataAsBinaryString: string= sip.stringify(sipPacket);
+                switch (floodType) {
+                    case "HEADERS":
+                        return `Sip Headers length > ${maxBytesHeaders} Bytes`;
+                    case "CONTENT":
+                        return `Sip content length > ${maxContentLength} Bytes`
+                }
 
-    if (!!sipPacket.headers["record-route"]) {
+            })());
 
-        let split = dataAsBinaryString.split("\r\n");
+            Object.setPrototypeOf(this, new.target.prototype);
+        }
 
-        for (let i = 0; i < split.length; i++) {
+        public toString(): string {
 
-            let match = split[i].match(/^Record-Route:(.+)$/);
-
-            if (match) {
-
-                split[i] = match[1]
-                    .replace(/\s/g, "")
-                    .split(",")
-                    .map(v => `Record-Route: ${v}`)
-                    .join("\r\n")
-                    ;
-                
-                break;
-
-            }
+            return [
+                `SIP Socket flood: ${this.message}`,
+                `cause: ${this.floodType}`,
+                `data ( as binary string ): >${this.data.toString("binary")}<`
+            ].join("\n");
 
         }
 
-        dataAsBinaryString= split.join("\r\n");
-
     }
+
+}
+
+
+export function toData(sipPacket: types.Packet): Buffer {
+
+    let dataAsBinaryString: string = sip.stringify(sipPacket);
 
     return Buffer.from(dataAsBinaryString, "binary");
 
 }
 
+//** Can throw */
 export const parse: (data: Buffer) => types.Packet = data => {
 
-    let sipPacket: types.Packet = sip.parse(data.toString("binary"));
+    const sipPacket: types.Packet | undefined = sip.parse(data.toString("binary"));
 
-    if (!sipPacket.headers.via) {
-        sipPacket.headers.via = [];
+    if (!sipPacket) {
+
+        throw new Error("Can't parse SIP packet");
+
     }
 
     return sipPacket;

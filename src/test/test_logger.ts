@@ -1,3 +1,5 @@
+process.once("unhandledRejection", error => { throw error; });
+
 import * as sipLibrary from "../lib";
 import { SyncEvent } from "ts-events-extended";
 

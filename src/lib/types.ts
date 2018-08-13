@@ -1,5 +1,5 @@
 
-export type TransportProtocol = "TCP" | "UDP" | "TLS" | "WSS";
+export type TransportProtocol = "TCP" | "TLS" | "WSS";
 
 export interface Via {
     version: string;
