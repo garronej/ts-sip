@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as types from "./types";
 /** For debug purpose only, assume sipPacket content is UTF-8 encoded text */
 export declare function stringify(sipPacket: types.Packet): string;
@@ -8,10 +7,10 @@ export declare function clonePacket(sipRequest: types.Request): types.Request;
 export declare function clonePacket(sipResponse: types.Response): types.Response;
 export declare function clonePacket(sipPacket: types.Packet): types.Packet;
 /** Safely set text based content ( encoded in utf8 ) */
-export declare function setPacketContent(sipPacket: types.Packet, data: Buffer): void;
+export declare function setPacketContent(sipPacket: types.Packet, data: types.IBuffer): void;
 export declare function setPacketContent(sipPacket: types.Packet, str: string): void;
 /** Get the RAW content as buffer */
-export declare function getPacketContent(sipPacket: types.Packet): Buffer;
+export declare function getPacketContent(sipPacket: types.Packet): types.IBuffer;
 export declare function readSrflxAddrInSdp(sdp: string): string | undefined;
 export declare function isPlainMessageRequest(sipRequest: types.Request, withAuth?: "WITH AUTH" | undefined): boolean;
 export declare function parsePath(path: string): types.AoRWithParsedUri[];

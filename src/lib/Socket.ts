@@ -47,9 +47,9 @@ export class Socket {
 
 
     /** Post chunk of data as received by the underlying connection*/
-    public readonly evtData = new SyncEvent<Buffer>();
+    public readonly evtData = new SyncEvent<types.IBuffer>();
     /** Post chunk of data as wrote on underlying socket (once write return true )*/
-    public readonly evtDataOut = new SyncEvent<Buffer>();
+    public readonly evtDataOut = new SyncEvent<types.IBuffer>();
     /** Chance to modify packet before it is serialized */
     public readonly evtPacketPreWrite = new SyncEvent<types.Packet>();
 

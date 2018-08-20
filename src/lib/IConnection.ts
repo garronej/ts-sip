@@ -20,14 +20,14 @@ export interface IConnection {
     once(evtName: "close", handler: (had_error: boolean) => void): this;
     once(evtName: "connect", handler: () => void): this;
 
-    on(eventName: "data", handler: (data: Buffer) => void): this;
+    on(eventName: "data", handler: (data: types.IBuffer) => void): this;
 
     isConnecting(): boolean;
 
     destroy(): void;
 
     /** return isSent */
-    write(data: Buffer, callback: (isSent: boolean) => void): void;
+    write(data: types.IBuffer, callback: (isSent: boolean) => void): void;
 
     readonly protocol: types.TransportProtocol;
 
@@ -124,7 +124,7 @@ export class NetSocketConnection implements IConnection {
 
     }
 
-    public on(_evtName: "data", handler: (data: Buffer) => void): this {
+    public on(_evtName: "data", handler: (data: types.IBuffer) => void): this {
 
         this.netSocket.on("data", handler);
 
@@ -144,7 +144,7 @@ export class NetSocketConnection implements IConnection {
 
     }
 
-    public write(data: Buffer, callback: (isSent: boolean) => void): void {
+    public write(data: types.IBuffer, callback: (isSent: boolean) => void): void {
 
         const isFlushed = this.netSocket.write(data);
 
@@ -281,7 +281,7 @@ export class WebSocketConnection implements IConnection {
     }
 
 
-    public on(_evtName: "data", handler: (data: Buffer) => void): this {
+    public on(_evtName: "data", handler: (data: types.IBuffer) => void): this {
 
         this.evtMessageEvent.attach(messageEvent =>
             handler(Buffer.from(messageEvent.data))
@@ -305,7 +305,7 @@ export class WebSocketConnection implements IConnection {
 
     }
 
-    public write(data: Buffer, callback: (isSent: boolean) => void): void {
+    public write(data: types.IBuffer, callback: (isSent: boolean) => void): void {
 
         try {
 

@@ -1,5 +1,5 @@
-/// <reference types="node" />
 import { Socket } from "../Socket";
+import * as types from "../types";
 export declare function sendRequest<Params, Response>(socket: Socket, methodName: string, params: Params, extra?: {
     timeout?: number;
     sanityCheck?: (response: Response) => boolean;
@@ -20,7 +20,7 @@ export declare type ErrorLogger = {
     onRequestNotSent(methodName: string, params: any, socket: Socket): void;
     onClosedConnection(methodName: string, params: any, socket: Socket): void;
     onRequestTimeout(methodName: string, params: any, timeoutValue: number, socket: Socket): void;
-    onMalformedResponse(methodName: string, params: any, rawResponse: Buffer, socket: Socket): void;
+    onMalformedResponse(methodName: string, params: any, rawResponse: types.IBuffer, socket: Socket): void;
 };
 export declare function getDefaultErrorLogger(options?: Partial<{
     idString: string;

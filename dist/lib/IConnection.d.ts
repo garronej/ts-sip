@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as types from "./types";
 /**
  * Wrapper aiming to provide a unique API to manipulate net.Socket tls.Socket and
@@ -14,11 +13,11 @@ export interface IConnection {
     once(evtName: "error", handler: (error: Error) => void): this;
     once(evtName: "close", handler: (had_error: boolean) => void): this;
     once(evtName: "connect", handler: () => void): this;
-    on(eventName: "data", handler: (data: Buffer) => void): this;
+    on(eventName: "data", handler: (data: types.IBuffer) => void): this;
     isConnecting(): boolean;
     destroy(): void;
     /** return isSent */
-    write(data: Buffer, callback: (isSent: boolean) => void): void;
+    write(data: types.IBuffer, callback: (isSent: boolean) => void): void;
     readonly protocol: types.TransportProtocol;
 }
 export declare type AddrAndPorts = {
@@ -41,10 +40,10 @@ export declare class NetSocketConnection implements IConnection {
     once(evtName: "error", handler: (error: Error) => void): this;
     once(evtName: "close", handler: (had_error: boolean) => void): this;
     once(evtName: "connect", handler: () => void): this;
-    on(_evtName: "data", handler: (data: Buffer) => void): this;
+    on(_evtName: "data", handler: (data: types.IBuffer) => void): this;
     isConnecting(): boolean;
     destroy(): void;
-    write(data: Buffer, callback: (isSent: boolean) => void): void;
+    write(data: types.IBuffer, callback: (isSent: boolean) => void): void;
 }
 /** Implementation for WebSocket */
 export declare class WebSocketConnection implements IConnection {
@@ -64,8 +63,8 @@ export declare class WebSocketConnection implements IConnection {
     once(evtName: "error", handler: (error: Error) => void): this;
     once(evtName: "close", handler: (had_error: boolean) => void): this;
     once(evtName: "connect", handler: () => void): this;
-    on(_evtName: "data", handler: (data: Buffer) => void): this;
+    on(_evtName: "data", handler: (data: types.IBuffer) => void): this;
     isConnecting(): boolean;
     destroy(): void;
-    write(data: Buffer, callback: (isSent: boolean) => void): void;
+    write(data: types.IBuffer, callback: (isSent: boolean) => void): void;
 }

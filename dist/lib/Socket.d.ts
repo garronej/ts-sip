@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
 import * as types from "./types";
 import { AddrAndPorts } from "./IConnection";
@@ -30,9 +29,9 @@ export declare class Socket {
     readonly evtResponse: SyncEvent<types.Response>;
     readonly evtRequest: SyncEvent<types.Request>;
     /** Post chunk of data as received by the underlying connection*/
-    readonly evtData: SyncEvent<Buffer>;
+    readonly evtData: SyncEvent<types.IBuffer>;
     /** Post chunk of data as wrote on underlying socket (once write return true )*/
-    readonly evtDataOut: SyncEvent<Buffer>;
+    readonly evtDataOut: SyncEvent<types.IBuffer>;
     /** Chance to modify packet before it is serialized */
     readonly evtPacketPreWrite: SyncEvent<types.Packet>;
     /**

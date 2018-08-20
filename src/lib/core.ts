@@ -7,7 +7,7 @@ export function makeStreamParser(
     onFlood: (floodError: makeStreamParser.FloodError) => void,
     maxBytesHeaders: number,
     maxContentLength: number
-): ((data: Buffer) => void) {
+): ((data: types.IBuffer) => void) {
 
     let streamParser = sip.makeStreamParser(
         handler,
@@ -32,7 +32,7 @@ export namespace makeStreamParser {
     export class FloodError extends Error {
         constructor(
             public readonly floodType: "HEADERS" | "CONTENT",
-            public readonly data: Buffer,
+            public readonly data: types.IBuffer,
             public maxBytesHeaders: number,
             public maxContentLength: number
         ) {
@@ -65,7 +65,7 @@ export namespace makeStreamParser {
 }
 
 
-export function toData(sipPacket: types.Packet): Buffer {
+export function toData(sipPacket: types.Packet): types.IBuffer {
 
     let dataAsBinaryString: string = sip.stringify(sipPacket);
 
@@ -74,7 +74,7 @@ export function toData(sipPacket: types.Packet): Buffer {
 }
 
 //** Can throw */
-export const parse: (data: Buffer) => types.Packet = data => {
+export const parse: (data: types.IBuffer) => types.Packet = data => {
 
     const sipPacket: types.Packet | undefined = sip.parse(data.toString("binary"));
 

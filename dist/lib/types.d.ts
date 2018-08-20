@@ -52,3 +52,8 @@ export interface Response extends PacketBase {
     reason: string;
 }
 export declare type Packet = Request | Response;
+/** Just so we do not have to expose node buffer type */
+export interface IBuffer {
+    toString(encoding?: string): string;
+    readonly byteLength: number;
+}

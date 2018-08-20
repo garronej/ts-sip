@@ -218,7 +218,7 @@ export type ErrorLogger = {
     onRequestNotSent(methodName: string, params: any, socket: Socket): void;
     onClosedConnection(methodName: string, params: any, socket: Socket): void;
     onRequestTimeout(methodName: string, params: any, timeoutValue: number, socket: Socket): void;
-    onMalformedResponse(methodName: string, params: any, rawResponse: Buffer, socket: Socket): void;
+    onMalformedResponse(methodName: string, params: any, rawResponse: types.IBuffer, socket: Socket): void;
 };
 
 export function getDefaultErrorLogger(

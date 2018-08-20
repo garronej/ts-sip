@@ -23,9 +23,9 @@ export function clonePacket(sipPacket: types.Packet): types.Packet {
 }
 
 /** Safely set text based content ( encoded in utf8 ) */
-export function setPacketContent(sipPacket: types.Packet, data: Buffer): void;
+export function setPacketContent(sipPacket: types.Packet, data: types.IBuffer): void;
 export function setPacketContent(sipPacket: types.Packet, str: string): void;
-export function setPacketContent(sipPacket: types.Packet, data: Buffer | string ): void {
+export function setPacketContent(sipPacket: types.Packet, data: types.IBuffer | string ): void {
 
     if( typeof data === "string" ){
         data= Buffer.from(data, "utf8");
@@ -38,7 +38,7 @@ export function setPacketContent(sipPacket: types.Packet, data: Buffer | string 
 }
 
 /** Get the RAW content as buffer */
-export function getPacketContent(sipPacket: types.Packet): Buffer {
+export function getPacketContent(sipPacket: types.Packet): types.IBuffer {
 
     return Buffer.from(sipPacket.content, "binary");
 
