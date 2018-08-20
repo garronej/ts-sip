@@ -53,7 +53,7 @@ export interface Response extends PacketBase {
 }
 export declare type Packet = Request | Response;
 /** Just so we do not have to expose node buffer type */
-export interface IBuffer {
+export interface IBuffer extends Uint8Array {
     toString(encoding?: string): string;
-    readonly byteLength: number;
+    equals(otherBuffer: Uint8Array): boolean;
 }
