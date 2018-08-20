@@ -29,13 +29,13 @@ export declare type AddrAndPorts = {
 };
 /** Implementation for net.Socket and tls.Socket */
 export declare class NetSocketConnection implements IConnection {
-    private readonly netSocket;
     readonly protocol: "TLS" | "TCP";
     localPort: number;
     remotePort: number;
     localAddress: string;
     remoteAddress: string;
-    constructor(netSocket: import("net").Socket);
+    private readonly netSocket;
+    constructor(netSocket: any);
     emit(evtName: "error", error: Error): void;
     emit(evtName: "close", had_error: boolean): void;
     once(evtName: "error", handler: (error: Error) => void): this;
@@ -48,7 +48,6 @@ export declare class NetSocketConnection implements IConnection {
 }
 /** Implementation for WebSocket */
 export declare class WebSocketConnection implements IConnection {
-    private readonly websocket;
     readonly protocol: "WSS";
     readonly localPort: number;
     readonly remotePort: number;
@@ -58,7 +57,8 @@ export declare class WebSocketConnection implements IConnection {
     private readonly evtError;
     private readonly evtClose;
     private readonly evtConnect;
-    constructor(websocket: WebSocket | import("ws"), addrAndPort: AddrAndPorts);
+    private readonly websocket;
+    constructor(websocket: any);
     emit(evtName: "error", error: Error): void;
     emit(evtName: "close", had_error: boolean): void;
     once(evtName: "error", handler: (error: Error) => void): this;

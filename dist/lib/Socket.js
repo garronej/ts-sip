@@ -8,8 +8,25 @@ var IConnection_1 = require("./IConnection");
 require("colors");
 //TODO: make a function to test if message are well formed: have from, to via ect.
 var Socket = /** @class */ (function () {
-    function Socket(socket, arg) {
+    /**
+     * @param socket net.Socket ( include tls.TLSSocket ) or an instance of an object that implement
+     * the HTML5's websocket interface. ( in node use 'ws' module ).
+     * The type of this param is not exposed because WebSocket as defined in the dom is not present
+     * in a node environment and the modules "net" "tls" and "ws" should not have types definition
+     * in a web environment.
+     * @param spoofedAddressAndPort source address and port of both source and destination can be overwritten
+     * thoses are used in buildNextHopPacket and for logging purpose.
+     * If not provided the values of the underlying connection will be used.
+     * There is two reason you may want to use this:
+     * 1) WebSocket interface does not have .localPort, .remotePort, .localAddress, .remoteAddress
+     * so providing them explicitly is the only way.
+     * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
+     * used by the underlying socket connection.
+     */
+    function Socket(socket, spoofedAddressAndPort) {
+        if (spoofedAddressAndPort === void 0) { spoofedAddressAndPort = {}; }
         var _this = this;
+        this.spoofedAddressAndPort = spoofedAddressAndPort;
         /** To store data contextually link to this socket */
         this.misc = {};
         /**
@@ -64,14 +81,10 @@ var Socket = /** @class */ (function () {
             return socket.destroy !== undefined;
         };
         if (matchNetSocket(socket)) {
-            var spoofedAddrAndPorts = arg || {};
             this.connection = new IConnection_1.NetSocketConnection(socket);
-            this.spoofedAddressAndPort = spoofedAddrAndPorts;
         }
         else {
-            var addrAndPort = arg;
-            this.connection = new IConnection_1.WebSocketConnection(socket, addrAndPort);
-            this.spoofedAddressAndPort = {};
+            this.connection = new IConnection_1.WebSocketConnection(socket);
         }
         var streamParser = core.makeStreamParser(function (sipPacket) {
             if (!!_this.loggerEvt.evtPacketIn) {

@@ -5,11 +5,11 @@ var ts_events_extended_1 = require("ts-events-extended");
 var NetSocketConnection = /** @class */ (function () {
     function NetSocketConnection(netSocket) {
         var _this = this;
-        this.netSocket = netSocket;
         this.localPort = NaN;
         this.remotePort = NaN;
         this.localAddress = "";
         this.remoteAddress = "";
+        this.netSocket = netSocket;
         if (this.netSocket["encrypted"]) {
             throw new Error("Class implementation reserved for net.Socket ( without TLS)");
         }
@@ -49,8 +49,6 @@ var NetSocketConnection = /** @class */ (function () {
         return this;
     };
     NetSocketConnection.prototype.isConnecting = function () {
-        // return !this.netSocket.localPort;
-        //TODO: see if ok
         return this.netSocket.connecting;
     };
     NetSocketConnection.prototype.destroy = function () {
@@ -80,14 +78,18 @@ var NetSocketConnection = /** @class */ (function () {
 exports.NetSocketConnection = NetSocketConnection;
 /** Implementation for WebSocket */
 var WebSocketConnection = /** @class */ (function () {
-    function WebSocketConnection(websocket, addrAndPort) {
+    function WebSocketConnection(websocket) {
         var _this = this;
-        this.websocket = websocket;
         this.protocol = "WSS";
+        this.localPort = NaN;
+        this.remotePort = NaN;
+        this.localAddress = "_unknown_local_address_";
+        this.remoteAddress = "_unknown_remote_address_";
         this.evtMessageEvent = new ts_events_extended_1.SyncEvent();
         this.evtError = new ts_events_extended_1.SyncEvent();
         this.evtClose = new ts_events_extended_1.SyncEvent();
         this.evtConnect = new ts_events_extended_1.VoidSyncEvent();
+        this.websocket = websocket;
         this.websocket.onmessage = function (messageEvent) {
             return _this.evtMessageEvent.post(messageEvent);
         };
@@ -102,10 +104,6 @@ var WebSocketConnection = /** @class */ (function () {
         if (this.isConnecting()) {
             this.websocket.onopen = function () { return _this.evtConnect.post(); };
         }
-        this.localPort = addrAndPort.localPort;
-        this.remotePort = addrAndPort.remotePort;
-        this.localAddress = addrAndPort.localAddress;
-        this.remoteAddress = addrAndPort.remoteAddress;
     }
     WebSocketConnection.prototype.emit = function (evtName, evtData) {
         var _this = this;

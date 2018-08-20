@@ -90,42 +90,43 @@ export class Socket {
     }
 
     private readonly connection: IConnection;
-    private readonly spoofedAddressAndPort: Partial<AddrAndPorts>;
 
     private openTimer: NodeJS.Timer = null as any;
 
+
+
+    /**
+     * @param socket net.Socket ( include tls.TLSSocket ) or an instance of an object that implement
+     * the HTML5's websocket interface. ( in node use 'ws' module ).
+     * The type of this param is not exposed because WebSocket as defined in the dom is not present 
+     * in a node environment and the modules "net" "tls" and "ws" should not have types definition 
+     * in a web environment.
+     * @param spoofedAddressAndPort source address and port of both source and destination can be overwritten
+     * thoses are used in buildNextHopPacket and for logging purpose. 
+     * If not provided the values of the underlying connection will be used.
+     * There is two reason you may want to use this:
+     * 1) WebSocket interface does not have .localPort, .remotePort, .localAddress, .remoteAddress 
+     * so providing them explicitly is the only way.
+     * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
+     * used by the underlying socket connection.
+     */
     constructor(
-        webSocket: WebSocket | import("ws"),
-        addrAndPorts: AddrAndPorts
-    );
-    constructor(
-        netSocket: import("net").Socket,
-        spoofedAddrAndPorts?: Partial<AddrAndPorts>
-    );
-    constructor(
-        socket: WebSocket | import("ws") | import("net").Socket,
-        arg: any
+        socket: any,
+        private readonly spoofedAddressAndPort: Partial<AddrAndPorts> = {}
     ) {
 
         const matchNetSocket = (socket: WebSocket | import("ws") | import("net").Socket): socket is import("net").Socket => {
             return (socket as import("net").Socket).destroy !== undefined;
         };
 
-        if (matchNetSocket(socket)) {
 
-            const spoofedAddrAndPorts: Partial<AddrAndPorts> = arg || {};
+        if (matchNetSocket(socket)) {
 
             this.connection = new NetSocketConnection(socket);
 
-            this.spoofedAddressAndPort = spoofedAddrAndPorts;
-
         } else {
 
-            const addrAndPort: AddrAndPorts = arg;
-
-            this.connection = new WebSocketConnection(socket, addrAndPort);
-
-            this.spoofedAddressAndPort = {};
+            this.connection = new WebSocketConnection(socket);
 
         }
 

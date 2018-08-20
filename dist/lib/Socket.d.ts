@@ -4,6 +4,7 @@ import * as types from "./types";
 import { AddrAndPorts } from "./IConnection";
 import "colors";
 export declare class Socket {
+    private readonly spoofedAddressAndPort;
     /** To store data contextually link to this socket */
     readonly misc: any;
     /**
@@ -56,10 +57,23 @@ export declare class Socket {
     readonly localAddress: string;
     readonly remoteAddress: string;
     private readonly connection;
-    private readonly spoofedAddressAndPort;
     private openTimer;
-    constructor(webSocket: WebSocket | import("ws"), addrAndPorts: AddrAndPorts);
-    constructor(netSocket: import("net").Socket, spoofedAddrAndPorts?: Partial<AddrAndPorts>);
+    /**
+     * @param socket net.Socket ( include tls.TLSSocket ) or an instance of an object that implement
+     * the HTML5's websocket interface. ( in node use 'ws' module ).
+     * The type of this param is not exposed because WebSocket as defined in the dom is not present
+     * in a node environment and the modules "net" "tls" and "ws" should not have types definition
+     * in a web environment.
+     * @param spoofedAddressAndPort source address and port of both source and destination can be overwritten
+     * thoses are used in buildNextHopPacket and for logging purpose.
+     * If not provided the values of the underlying connection will be used.
+     * There is two reason you may want to use this:
+     * 1) WebSocket interface does not have .localPort, .remotePort, .localAddress, .remoteAddress
+     * so providing them explicitly is the only way.
+     * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
+     * used by the underlying socket connection.
+     */
+    constructor(socket: any, spoofedAddressAndPort?: Partial<AddrAndPorts>);
     /**
      * Return true if sent successfully
      * If socket had not connected yet throw error.

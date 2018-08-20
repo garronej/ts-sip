@@ -8,8 +8,6 @@ import * as types from "./types";
  */
 export interface IConnection {
 
-    //TODO: set max listener infinity for net
-
     localPort: number;
     remotePort: number;
     localAddress: string;
@@ -52,9 +50,11 @@ export class NetSocketConnection implements IConnection {
     public localAddress = "";
     public remoteAddress = "";
 
-    constructor( 
-        private readonly netSocket: import("net").Socket
-    ) {
+    private readonly netSocket: import("net").Socket;
+
+    constructor(netSocket: any) {
+
+        this.netSocket = netSocket;
 
         if (this.netSocket["encrypted"]) {
             throw new Error("Class implementation reserved for net.Socket ( without TLS)");
@@ -134,9 +134,6 @@ export class NetSocketConnection implements IConnection {
 
     public isConnecting(): boolean {
 
-        // return !this.netSocket.localPort;
-
-        //TODO: see if ok
         return this.netSocket.connecting;
 
     }
@@ -189,22 +186,23 @@ export class WebSocketConnection implements IConnection {
 
     public readonly protocol: "WSS" = "WSS";
 
-    public readonly localPort: number;
-    public readonly remotePort: number;
-    public readonly localAddress: string;
-    public readonly remoteAddress: string;
+    public readonly localPort: number = NaN;
+    public readonly remotePort: number = NaN;
+    public readonly localAddress: string = "_unknown_local_address_";
+    public readonly remoteAddress: string = "_unknown_remote_address_";
 
     private readonly evtMessageEvent = new SyncEvent<MessageEvent>();
     private readonly evtError = new SyncEvent<Error>();
     private readonly evtClose = new SyncEvent<boolean>();
     private readonly evtConnect = new VoidSyncEvent();
 
-    constructor(
-        private readonly websocket: WebSocket | import("ws"),
-        addrAndPort: AddrAndPorts
-    ) {
+    private readonly websocket: WebSocket | import("ws");
 
-        this.websocket.onmessage = messageEvent => 
+    constructor(websocket: any) {
+
+        this.websocket = websocket;
+
+        this.websocket.onmessage = messageEvent =>
             this.evtMessageEvent.post(messageEvent)
             ;
 
@@ -223,11 +221,6 @@ export class WebSocketConnection implements IConnection {
             this.websocket.onopen = () => this.evtConnect.post();
 
         }
-
-        this.localPort = addrAndPort.localPort;
-        this.remotePort = addrAndPort.remotePort;
-        this.localAddress = addrAndPort.localAddress;
-        this.remoteAddress = addrAndPort.remoteAddress;
 
     }
 
