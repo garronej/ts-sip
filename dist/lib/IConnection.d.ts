@@ -30,7 +30,7 @@ export declare type AddrAndPorts = {
 /** Implementation for net.Socket and tls.Socket */
 export declare class NetSocketConnection implements IConnection {
     private readonly netSocket;
-    readonly protocol: any;
+    readonly protocol: "TLS" | "TCP";
     localPort: number;
     remotePort: number;
     localAddress: string;
@@ -49,7 +49,7 @@ export declare class NetSocketConnection implements IConnection {
 /** Implementation for WebSocket */
 export declare class WebSocketConnection implements IConnection {
     private readonly websocket;
-    readonly protocol: string;
+    readonly protocol: "WSS";
     readonly localPort: number;
     readonly remotePort: number;
     readonly localAddress: string;

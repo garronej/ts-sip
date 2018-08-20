@@ -45,7 +45,7 @@ export type AddrAndPorts = {
 /** Implementation for net.Socket and tls.Socket */
 export class NetSocketConnection implements IConnection {
 
-    public readonly protocol;
+    public readonly protocol: "TLS" | "TCP";
 
     public localPort = NaN;
     public remotePort = NaN;
@@ -187,7 +187,7 @@ export class NetSocketConnection implements IConnection {
 /** Implementation for WebSocket */
 export class WebSocketConnection implements IConnection {
 
-    public readonly protocol = "WSS";
+    public readonly protocol: "WSS" = "WSS";
 
     public readonly localPort: number;
     public readonly remotePort: number;

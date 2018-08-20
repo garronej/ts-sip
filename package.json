@@ -3,7 +3,7 @@
   "description": "A collection of low level tools to work with the SIP protocol.",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "scripts": {
     "tsc": "node ./node_modules/typescript/bin/tsc -p ./tsconfig.json",
     "tsc-w": "node ./node_modules/typescript/bin/tsc -w -p ./tsconfig.json",
@@ -18,13 +18,13 @@
   "dependencies": {
     "colors": "^1.1.2",
     "transfer-tools": "garronej/transfer-tools",
-    "ts-events-extended": "garronej/ts-events-extended",
-    "@types/ws": "^5.1.2",
-    "@types/node": "^10.3.4"
+    "ts-events-extended": "garronej/ts-events-extended"
   },
   "devDependencies": {
+    "@types/ws": "^5.1.2",
+    "@types/node": "^10.3.4",
     "@types/colors": "^1.2.1",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.1",
     "ws": "^6.0.0"
   }
 }
