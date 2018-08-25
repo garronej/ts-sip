@@ -3,6 +3,46 @@ process.once("unhandledRejection", error => { throw error; });
 import * as sipLibrary from "../lib";
 import * as net from "net";
 
+export namespace foo {
+
+    export const methodName = "foo";
+
+    export type Params = {
+        p1: string;
+        p2: number;
+    };
+
+    /** Sim for which we already have a route */
+    export type Response = string;
+
+}
+
+
+const handlers: sipLibrary.api.Server.Handlers = {};
+
+(() => {
+
+    const methodName = foo.methodName;
+    type Params = foo.Params;
+    type Response = foo.Response;
+
+    const handler: sipLibrary.api.Server.Handler<Params, Response> = {
+        "sanityCheck": params => (
+            params instanceof Object &&
+            typeof params.p1 === "string" &&
+            typeof params.p2 === "number"
+        ),
+        "handler": async (params, fromSocket) => {
+
+            return `${params.p1} ${params.p2}`;
+
+        }
+    };
+
+    handlers[methodName] = handler;
+
+})();
+
 (async () => {
 
     const server = await new Promise<net.Server>(resolve =>
@@ -24,10 +64,11 @@ import * as net from "net";
     const idString = "SocketToClient";
 
     const apiServer = new sipLibrary.api.Server(
-        {},
+        handlers,
         sipLibrary.api.Server.getDefaultLogger({
             idString,
-            "hideKeepAlive": false
+            "hideKeepAlive": false,
+            "displayOnlyErrors": true
         })
     );
 
@@ -47,7 +88,7 @@ import * as net from "net";
             "incomingTraffic": true,
             "outgoingTraffic": true,
             "colorizedTraffic": "IN",
-            "ignoreApiTraffic": false
+            "ignoreApiTraffic": true
         });
 
         apiServer.startListening(socketToClient);
@@ -59,7 +100,7 @@ import * as net from "net";
             sipLibrary.api.client.getDefaultErrorLogger({ idString })
         );
 
-        socketToClient.evtClose.attachOnce(had_error=>{
+        socketToClient.evtClose.attachOnce(had_error => {
 
             console.log("Socket to client closed", { had_error });
 
@@ -105,10 +146,10 @@ async function startClient(port: number) {
         "connection": true,
         "error": true,
         "close": true,
-        "incomingTraffic": true,
-        "outgoingTraffic": true,
+        "incomingTraffic": false,
+        "outgoingTraffic": false,
         "colorizedTraffic": "OUT",
-        "ignoreApiTraffic": false
+        "ignoreApiTraffic": true
     });
 
 
@@ -121,11 +162,51 @@ async function startClient(port: number) {
         sipLibrary.api.client.getDefaultErrorLogger({ idString })
     );
 
-    setTimeout(()=> {
-        
-        socketToServer.destroy("Closing socket client side");
+    socketToServer.evtConnect.attachOnce(async () => {
 
-    }, 4000);
+        console.log("connect");
+
+        const tasks: Promise<string>[] = [];
+
+        const before = Date.now();
+
+        for (let i = 0; i < 5000; i++) {
+
+            //await new Promise<void>(resolve => setTimeout(resolve, 30));
+            await new Promise<void>(resolve => setImmediate(resolve));
+
+            tasks[tasks.length] = (async () => {
+
+                //const before = Date.now();
+
+                const str = await sipLibrary.api.client.sendRequest<foo.Params, foo.Response>(
+                    socketToServer,
+                    foo.methodName,
+                    { "p1": "bar", "p2": 43 },
+                    { "timeout": 5000, "sanityCheck": response => typeof response === "string" }
+                ).catch(() => "error");
+
+                //console.log(`Total request duration: ${Date.now() - before}`);
+
+                return str;
+
+            })();
+
+        }
+
+        Promise.all(tasks).then(r => {
+            
+            console.log(`====================================================>Total duration: ${Date.now() - before}`);
+
+            socketToServer.destroy("Closing socket client side");
+
+        });
+
+
+
+    });
+
+
 
 }
 
