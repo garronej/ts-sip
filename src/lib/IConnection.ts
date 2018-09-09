@@ -56,10 +56,6 @@ export class NetSocketConnection implements IConnection {
 
         this.netSocket = netSocket;
 
-        if (this.netSocket["encrypted"]) {
-            throw new Error("Class implementation reserved for net.Socket ( without TLS)");
-        }
-
         this.netSocket.setMaxListeners(Infinity);
 
         const setAddrAndPort = () => {

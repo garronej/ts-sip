@@ -10,9 +10,6 @@ var NetSocketConnection = /** @class */ (function () {
         this.localAddress = "";
         this.remoteAddress = "";
         this.netSocket = netSocket;
-        if (this.netSocket["encrypted"]) {
-            throw new Error("Class implementation reserved for net.Socket ( without TLS)");
-        }
         this.netSocket.setMaxListeners(Infinity);
         var setAddrAndPort = function () {
             _this.localPort = _this.netSocket.localPort;
