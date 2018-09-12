@@ -287,6 +287,18 @@ function stringify(m) {
     return s;
 }
 exports.stringify = stringify;
+/**
+ *
+ * @param onMessage: (sipPacket: types.Packet) => void
+ * @param onFlood?: (dataAsBinaryString: string, floodType: "HEADERS" | "CONTENT")=> void
+ * @param maxBytesHeaders?: number
+ * @param maxContentLength?: number
+ *
+ * return (dataAsBinaryString: string)=> void;
+ *
+ * if onFlood is undefined no flood detection will be enabled.
+ *
+ */
 function makeStreamParser(onMessage, onFlood, maxBytesHeaders, maxContentLength) {
     maxBytesHeaders = maxBytesHeaders || 60480;
     maxContentLength = maxContentLength || 604800;

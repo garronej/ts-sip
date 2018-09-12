@@ -14,8 +14,9 @@ var Socket = /** @class */ (function () {
      * The type of this param is not exposed because WebSocket as defined in the dom is not present
      * in a node environment and the modules "net" "tls" and "ws" should not have types definition
      * in a web environment.
+     * @param isRemoteTrusted if set to false enable flood detection.
      * @param spoofedAddressAndPort source address and port of both source and destination can be overwritten
-     * thoses are used in buildNextHopPacket and for logging purpose.
+     * those are used in buildNextHopPacket and for logging purpose.
      * If not provided the values of the underlying connection will be used.
      * There is two reason you may want to use this:
      * 1) WebSocket interface does not have .localPort, .remotePort, .localAddress, .remoteAddress
@@ -23,7 +24,7 @@ var Socket = /** @class */ (function () {
      * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
      * used by the underlying socket connection.
      */
-    function Socket(socket, spoofedAddressAndPort) {
+    function Socket(socket, isRemoteTrusted, spoofedAddressAndPort) {
         if (spoofedAddressAndPort === void 0) { spoofedAddressAndPort = {}; }
         var _this = this;
         this.spoofedAddressAndPort = spoofedAddressAndPort;
@@ -96,14 +97,18 @@ var Socket = /** @class */ (function () {
             else {
                 _this.evtResponse.post(sipPacket);
             }
-        }, function (floodError) { return _this.connection.emit("error", floodError); }, Socket.maxBytesHeaders, Socket.maxContentLength);
+        }, isRemoteTrusted ? undefined : ({
+            "onFlood": function (floodError) { return _this.connection.emit("error", floodError); },
+            "maxBytesHeaders": Socket.maxBytesHeaders,
+            "maxContentLength": Socket.maxContentLength
+        }));
         this.connection
             .once("error", function (error) {
             _this.evtError.post(error);
             _this.connection.emit("close", true);
         })
             .once("close", function (had_error) {
-            //NOTE: 99.9% already cleared.
+            //NOTE: 99.9% chance it's already cleared.
             clearTimeout(_this.openTimer);
             _this.connection.destroy();
             _this.evtClose.post(had_error);

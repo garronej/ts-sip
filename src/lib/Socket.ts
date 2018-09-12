@@ -101,8 +101,9 @@ export class Socket {
      * The type of this param is not exposed because WebSocket as defined in the dom is not present 
      * in a node environment and the modules "net" "tls" and "ws" should not have types definition 
      * in a web environment.
+     * @param isRemoteTrusted if set to false enable flood detection.
      * @param spoofedAddressAndPort source address and port of both source and destination can be overwritten
-     * thoses are used in buildNextHopPacket and for logging purpose. 
+     * those are used in buildNextHopPacket and for logging purpose. 
      * If not provided the values of the underlying connection will be used.
      * There is two reason you may want to use this:
      * 1) WebSocket interface does not have .localPort, .remotePort, .localAddress, .remoteAddress 
@@ -112,7 +113,8 @@ export class Socket {
      */
     constructor(
         socket: any,
-        private readonly spoofedAddressAndPort: Partial<AddrAndPorts> = {}
+        isRemoteTrusted: boolean,
+        private readonly spoofedAddressAndPort: Partial<AddrAndPorts> = {},
     ) {
 
         const matchNetSocket = (socket: WebSocket | import("ws") | import("net").Socket): socket is import("net").Socket => {
@@ -150,9 +152,11 @@ export class Socket {
                 }
 
             },
-            (floodError) => this.connection.emit("error", floodError),
-            Socket.maxBytesHeaders,
-            Socket.maxContentLength
+            isRemoteTrusted ? undefined : ({ 
+                "onFlood": floodError => this.connection.emit("error", floodError),
+                "maxBytesHeaders": Socket.maxBytesHeaders,
+                "maxContentLength": Socket.maxContentLength
+            })
         );
 
         this.connection
@@ -165,7 +169,7 @@ export class Socket {
             })
             .once("close", had_error => {
 
-                //NOTE: 99.9% already cleared.
+                //NOTE: 99.9% chance it's already cleared.
                 clearTimeout(this.openTimer);
 
                 this.connection.destroy();

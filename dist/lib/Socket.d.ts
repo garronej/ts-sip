@@ -63,8 +63,9 @@ export declare class Socket {
      * The type of this param is not exposed because WebSocket as defined in the dom is not present
      * in a node environment and the modules "net" "tls" and "ws" should not have types definition
      * in a web environment.
+     * @param isRemoteTrusted if set to false enable flood detection.
      * @param spoofedAddressAndPort source address and port of both source and destination can be overwritten
-     * thoses are used in buildNextHopPacket and for logging purpose.
+     * those are used in buildNextHopPacket and for logging purpose.
      * If not provided the values of the underlying connection will be used.
      * There is two reason you may want to use this:
      * 1) WebSocket interface does not have .localPort, .remotePort, .localAddress, .remoteAddress
@@ -72,7 +73,7 @@ export declare class Socket {
      * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
      * used by the underlying socket connection.
      */
-    constructor(socket: any, spoofedAddressAndPort?: Partial<AddrAndPorts>);
+    constructor(socket: any, isRemoteTrusted: boolean, spoofedAddressAndPort?: Partial<AddrAndPorts>);
     /**
      * Return true if sent successfully
      * If socket had not connected yet throw error.

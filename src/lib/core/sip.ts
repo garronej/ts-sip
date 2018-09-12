@@ -360,31 +360,48 @@ function stringify(m) {
 
 export { stringify };
 
-function makeStreamParser(onMessage, onFlood, maxBytesHeaders, maxContentLength) {
+/**
+ * 
+ * @param onMessage: (sipPacket: types.Packet) => void
+ * @param onFlood?: (dataAsBinaryString: string, floodType: "HEADERS" | "CONTENT")=> void
+ * @param maxBytesHeaders?: number
+ * @param maxContentLength?: number
+ * 
+ * return (dataAsBinaryString: string)=> void;
+ * 
+ * if onFlood is undefined no flood detection will be enabled.
+ * 
+ */
+function makeStreamParser(
+  onMessage,
+  onFlood?,
+  maxBytesHeaders?,
+  maxContentLength?
+) {
 
-  maxBytesHeaders= maxBytesHeaders || 60480;
-  maxContentLength= maxContentLength || 604800;
+  maxBytesHeaders = maxBytesHeaders || 60480;
+  maxContentLength = maxContentLength || 604800;
 
   var m;
   var r = '';
 
-  var _onFlood: Function= function(){
+  var _onFlood: Function = function () {
 
-      onFlood.apply(null, arguments);
+    onFlood.apply(null, arguments);
 
-      r= '';
+    r = '';
 
   };
-  
+
   function headers(data) {
     r += data;
 
     var a = r.match(/^\s*([\S\s]*?)\r\n\r\n([\S\s]*)$/);
 
-    if(!!a) {
+    if (!!a) {
       r = a[2];
 
-      if( !!onFlood && a[1].length > maxBytesHeaders ){
+      if (!!onFlood && a[1].length > maxBytesHeaders) {
 
         _onFlood(a.input, "HEADERS");
 
@@ -394,9 +411,9 @@ function makeStreamParser(onMessage, onFlood, maxBytesHeaders, maxContentLength)
 
       m = parse(a[1]);
 
-      if(m && m.headers['content-length'] !== undefined) {
+      if (m && m.headers['content-length'] !== undefined) {
 
-        if ( !!onFlood && m.headers['content-length'] > maxContentLength) {
+        if (!!onFlood && m.headers['content-length'] > maxContentLength) {
 
           _onFlood(a.input, "CONTENT");
 
@@ -409,9 +426,9 @@ function makeStreamParser(onMessage, onFlood, maxBytesHeaders, maxContentLength)
       }
       else
         headers('');
-    }else if( !!onFlood && r.length > maxBytesHeaders){
+    } else if (!!onFlood && r.length > maxBytesHeaders) {
 
-        _onFlood(r, "HEADERS");
+      _onFlood(r, "HEADERS");
 
     }
 
@@ -420,13 +437,13 @@ function makeStreamParser(onMessage, onFlood, maxBytesHeaders, maxContentLength)
   function content(data) {
     r += data;
 
-    var contentLength= m.headers['content-length'];
+    var contentLength = m.headers['content-length'];
 
-    if(r.length >= contentLength) {
+    if (r.length >= contentLength) {
       m.content = r.substring(0, contentLength);
-      
+
       onMessage(m);
-      
+
       var s = r.substring(contentLength);
       state = headers;
       r = '';
@@ -434,9 +451,9 @@ function makeStreamParser(onMessage, onFlood, maxBytesHeaders, maxContentLength)
     }
   }
 
-  var state=headers;
+  var state = headers;
 
-  return function(data) { state(data); }
+  return function (data) { state(data); }
 
 }
 

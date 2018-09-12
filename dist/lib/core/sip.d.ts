@@ -9,7 +9,19 @@ declare function stringifyAuthHeader(a: any): string;
 export { stringifyAuthHeader };
 declare function stringify(m: any): any;
 export { stringify };
-declare function makeStreamParser(onMessage: any, onFlood: any, maxBytesHeaders: any, maxContentLength: any): (data: any) => void;
+/**
+ *
+ * @param onMessage: (sipPacket: types.Packet) => void
+ * @param onFlood?: (dataAsBinaryString: string, floodType: "HEADERS" | "CONTENT")=> void
+ * @param maxBytesHeaders?: number
+ * @param maxContentLength?: number
+ *
+ * return (dataAsBinaryString: string)=> void;
+ *
+ * if onFlood is undefined no flood detection will be enabled.
+ *
+ */
+declare function makeStreamParser(onMessage: any, onFlood?: any, maxBytesHeaders?: any, maxContentLength?: any): (data: any) => void;
 export { makeStreamParser };
 /** Can throw, can return undefined */
 declare function parseMessage(s: any): any;

@@ -75,7 +75,8 @@ const handlers: sipLibrary.api.Server.Handlers = {};
     server.on("connection", async netSocket => {
 
         const socketToClient = new sipLibrary.Socket(
-            netSocket
+            netSocket,
+            false
         );
 
         socketToClient.enableLogger({
@@ -134,6 +135,7 @@ async function startClient(port: number) {
             "port": port,
             "localAddress": "127.0.0.1"
         }),
+        true,
         {
             "localAddress": "spoofed_local_address"
         }

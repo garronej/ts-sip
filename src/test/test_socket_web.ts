@@ -40,6 +40,7 @@ import * as WebSocket from "ws";
 
         const socketToClient = new sipLibrary.Socket(
             webSocket,
+            true,
             {
                 "localAddress": "127.0.0.1",
                 "localPort": port,
@@ -100,6 +101,7 @@ async function startClient(port: number) {
 
     const socketToServer = new sipLibrary.Socket(
         new WebSocket(`ws://127.0.0.1:${port}`, "SIP"),
+        false,
         {
             "localAddress": "127.0.0.1",
             "localPort": NaN,

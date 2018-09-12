@@ -1,5 +1,9 @@
 import * as types from "./types";
-export declare function makeStreamParser(handler: (sipPacket: types.Packet) => void, onFlood: (floodError: makeStreamParser.FloodError) => void, maxBytesHeaders: number, maxContentLength: number): ((data: types.IBuffer) => void);
+export declare function makeStreamParser(handler: (sipPacket: types.Packet) => void, floodHandler?: {
+    onFlood: (floodError: makeStreamParser.FloodError) => void;
+    maxBytesHeaders: number;
+    maxContentLength: number;
+}): ((data: types.IBuffer) => void);
 export declare namespace makeStreamParser {
     class FloodError extends Error {
         readonly floodType: "HEADERS" | "CONTENT";

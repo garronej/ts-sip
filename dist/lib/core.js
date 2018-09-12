@@ -15,8 +15,16 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var sip = require("./core/sip");
 var _sdp_ = require("./core/sdp");
-function makeStreamParser(handler, onFlood, maxBytesHeaders, maxContentLength) {
-    var streamParser = sip.makeStreamParser(handler, function (dataAsBinaryStr, floodType) { return onFlood(new makeStreamParser.FloodError(floodType, Buffer.from(dataAsBinaryStr, "binary"), maxBytesHeaders, maxContentLength)); }, maxBytesHeaders, maxContentLength);
+function makeStreamParser(handler, floodHandler) {
+    var streamParser = (function () {
+        if (!floodHandler) {
+            return sip.makeStreamParser(handler);
+        }
+        else {
+            var onFlood_1 = floodHandler.onFlood, maxBytesHeaders_1 = floodHandler.maxBytesHeaders, maxContentLength_1 = floodHandler.maxContentLength;
+            return sip.makeStreamParser(handler, function (dataAsBinaryStr, floodType) { return onFlood_1(new makeStreamParser.FloodError(floodType, Buffer.from(dataAsBinaryStr, "binary"), maxBytesHeaders_1, maxContentLength_1)); }, maxBytesHeaders_1, maxContentLength_1);
+        }
+    })();
     return function (data) { return streamParser(data.toString("binary")); };
 }
 exports.makeStreamParser = makeStreamParser;
