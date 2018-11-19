@@ -50,7 +50,6 @@ export declare class Socket {
     readonly evtError: SyncEvent<Error>;
     static readonly maxBytesHeaders: number;
     static readonly maxContentLength: number;
-    connectionTimeout: number;
     readonly localPort: number;
     readonly remotePort: number;
     readonly localAddress: string;
@@ -73,7 +72,7 @@ export declare class Socket {
      * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
      * used by the underlying socket connection.
      */
-    constructor(socket: any, isRemoteTrusted: boolean, spoofedAddressAndPort?: Partial<AddrAndPorts>);
+    constructor(socket: any, isRemoteTrusted: boolean, spoofedAddressAndPort?: Partial<AddrAndPorts>, connectionTimeout?: number);
     /**
      * Return true if sent successfully
      * If socket had not connected yet throw error.

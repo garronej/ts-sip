@@ -24,8 +24,9 @@ var Socket = /** @class */ (function () {
      * 2) If using a load balancer the addresses/ports that you want to expose are not really the one
      * used by the underlying socket connection.
      */
-    function Socket(socket, isRemoteTrusted, spoofedAddressAndPort) {
+    function Socket(socket, isRemoteTrusted, spoofedAddressAndPort, connectionTimeout) {
         if (spoofedAddressAndPort === void 0) { spoofedAddressAndPort = {}; }
+        if (connectionTimeout === void 0) { connectionTimeout = 3000; }
         var _this = this;
         this.spoofedAddressAndPort = spoofedAddressAndPort;
         /** To store data contextually link to this socket */
@@ -72,7 +73,6 @@ var Socket = /** @class */ (function () {
          *
          * */
         this.evtError = new ts_events_extended_1.SyncEvent();
-        this.connectionTimeout = 3000;
         this.openTimer = null;
         /** Readonly, true if destroy have been called ( not called internally ) */
         this.haveBeedDestroyed = false;
@@ -131,8 +131,8 @@ var Socket = /** @class */ (function () {
                 if (!!_this.evtClose.postCount) {
                     return;
                 }
-                _this.connection.emit("error", new Error("Sip socket connection timeout after " + _this.connectionTimeout));
-            }, this.connectionTimeout);
+                _this.connection.emit("error", new Error("Sip socket connection timeout after " + connectionTimeout));
+            }, connectionTimeout);
             this.connection.once("connect", function () {
                 clearTimeout(_this.openTimer);
                 _this.evtConnect.post();

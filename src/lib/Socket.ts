@@ -70,8 +70,6 @@ export class Socket {
 
     public static readonly maxBytesHeaders = 7820;
     public static readonly maxContentLength = 24624;
-    public connectionTimeout = 3000;
-
 
     public get localPort() {
         return this.spoofedAddressAndPort.localPort || this.connection.localPort;
@@ -115,6 +113,7 @@ export class Socket {
         socket: any,
         isRemoteTrusted: boolean,
         private readonly spoofedAddressAndPort: Partial<AddrAndPorts> = {},
+        connectionTimeout= 3000
     ) {
 
         const matchNetSocket = (socket: WebSocket | import("ws") | import("net").Socket): socket is import("net").Socket => {
@@ -210,10 +209,10 @@ export class Socket {
 
                 this.connection.emit(
                     "error",
-                    new Error(`Sip socket connection timeout after ${this.connectionTimeout}`)
+                    new Error(`Sip socket connection timeout after ${connectionTimeout}`)
                 );
 
-            }, this.connectionTimeout);
+            }, connectionTimeout);
 
             this.connection.once(
                 "connect",
