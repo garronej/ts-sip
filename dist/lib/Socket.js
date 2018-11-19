@@ -72,6 +72,7 @@ var Socket = /** @class */ (function () {
          *
          * */
         this.evtError = new ts_events_extended_1.SyncEvent();
+        this.connectionTimeout = 3000;
         this.openTimer = null;
         /** Readonly, true if destroy have been called ( not called internally ) */
         this.haveBeedDestroyed = false;
@@ -130,8 +131,8 @@ var Socket = /** @class */ (function () {
                 if (!!_this.evtClose.postCount) {
                     return;
                 }
-                _this.connection.emit("error", new Error("Sip socket connection timeout after " + Socket.connectionTimeout));
-            }, Socket.connectionTimeout);
+                _this.connection.emit("error", new Error("Sip socket connection timeout after " + _this.connectionTimeout));
+            }, this.connectionTimeout);
             this.connection.once("connect", function () {
                 clearTimeout(_this.openTimer);
                 _this.evtConnect.post();
@@ -304,7 +305,6 @@ var Socket = /** @class */ (function () {
     };
     Socket.maxBytesHeaders = 7820;
     Socket.maxContentLength = 24624;
-    Socket.connectionTimeout = 3000;
     return Socket;
 }());
 exports.Socket = Socket;

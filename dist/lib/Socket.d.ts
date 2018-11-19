@@ -50,7 +50,7 @@ export declare class Socket {
     readonly evtError: SyncEvent<Error>;
     static readonly maxBytesHeaders: number;
     static readonly maxContentLength: number;
-    static readonly connectionTimeout: number;
+    connectionTimeout: number;
     readonly localPort: number;
     readonly remotePort: number;
     readonly localAddress: string;

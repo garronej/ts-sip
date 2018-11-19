@@ -70,7 +70,7 @@ export class Socket {
 
     public static readonly maxBytesHeaders = 7820;
     public static readonly maxContentLength = 24624;
-    public static readonly connectionTimeout = 3000;
+    public connectionTimeout = 3000;
 
 
     public get localPort() {
@@ -210,10 +210,10 @@ export class Socket {
 
                 this.connection.emit(
                     "error",
-                    new Error(`Sip socket connection timeout after ${Socket.connectionTimeout}`)
+                    new Error(`Sip socket connection timeout after ${this.connectionTimeout}`)
                 );
 
-            }, Socket.connectionTimeout);
+            }, this.connectionTimeout);
 
             this.connection.once(
                 "connect",
