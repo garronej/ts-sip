@@ -142,7 +142,7 @@ export class NetSocketConnection implements IConnection {
 
     public write(data: types.IBuffer, callback: (isSent: boolean) => void): void {
 
-        const isFlushed = this.netSocket.write(data);
+        const isFlushed = this.netSocket.write(data as Buffer);
 
         if (isFlushed) {
 

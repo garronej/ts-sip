@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -50,6 +50,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var misc = require("../misc");
 var ApiMessage_1 = require("./ApiMessage");
+var setPrototypeOf = require("setprototypeof");
 function sendRequest(socket, methodName, params, extra) {
     if (extra === void 0) { extra = {}; }
     return __awaiter(this, void 0, void 0, function () {
@@ -179,7 +180,7 @@ var SendRequestError = /** @class */ (function (_super) {
         _this.params = params;
         _this.cause = cause;
         _this.misc = {};
-        Object.setPrototypeOf(_this, _newTarget.prototype);
+        setPrototypeOf(_this, _newTarget.prototype);
         return _this;
     }
     return SendRequestError;

@@ -2,6 +2,7 @@ import { Socket } from "../Socket";
 import * as misc from "../misc";
 import * as types from "../types";
 import { ApiMessage, keepAlive } from "./ApiMessage";
+import setPrototypeOf = require("setprototypeof");
 
 export async function sendRequest<Params, Response>(
     socket: Socket,
@@ -210,7 +211,8 @@ export class SendRequestError extends Error {
             "MALFORMED RESPONSE"
     ) {
         super(`Send request ${methodName} ${cause}`);
-        Object.setPrototypeOf(this, new.target.prototype);
+        setPrototypeOf(this, new.target.prototype);
+
     }
 }
 

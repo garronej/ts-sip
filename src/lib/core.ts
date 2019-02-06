@@ -1,6 +1,7 @@
 import * as sip from "./core/sip";
 import * as _sdp_ from "./core/sdp";
 import * as types from "./types";
+import setPrototypeOf = require("setprototypeof");
 
 export function makeStreamParser(
     handler: (sipPacket: types.Packet) => void,
@@ -62,7 +63,7 @@ export namespace makeStreamParser {
 
             })());
 
-            Object.setPrototypeOf(this, new.target.prototype);
+            setPrototypeOf(this, new.target.prototype);
         }
 
         public toString(): string {

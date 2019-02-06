@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -15,6 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var sip = require("./core/sip");
 var _sdp_ = require("./core/sdp");
+var setPrototypeOf = require("setprototypeof");
 function makeStreamParser(handler, floodHandler) {
     var streamParser = (function () {
         if (!floodHandler) {
@@ -45,7 +46,7 @@ exports.makeStreamParser = makeStreamParser;
             _this.data = data;
             _this.maxBytesHeaders = maxBytesHeaders;
             _this.maxContentLength = maxContentLength;
-            Object.setPrototypeOf(_this, _newTarget.prototype);
+            setPrototypeOf(_this, _newTarget.prototype);
             return _this;
         }
         FloodError.prototype.toString = function () {
