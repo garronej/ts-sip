@@ -10,6 +10,36 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __values = (this && this.__values) || function (o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spread = (this && this.__spread) || function () {
+    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var core = require("./core");
 //export const regIdKey = "reg-id";
@@ -41,16 +71,35 @@ function getPacketContent(sipPacket) {
 }
 exports.getPacketContent = getPacketContent;
 function readSrflxAddrInSdp(sdp) {
-    for (var _i = 0, _a = core.parseSdp(sdp).m; _i < _a.length; _i++) {
-        var m_i = _a[_i];
-        if (m_i.media !== "audio")
-            continue;
-        for (var _b = 0, _c = m_i.a; _b < _c.length; _b++) {
-            var a_i = _c[_b];
-            var match = a_i.match(/^candidate(?:[^\s]+\s){4}((?:[0-9]{1,3}\.){3}[0-9]{1,3})\s(?:[^\s]+\s){2}srflx/);
-            if (match)
-                return match[1];
+    var e_1, _a, e_2, _b;
+    try {
+        for (var _c = __values(core.parseSdp(sdp).m), _d = _c.next(); !_d.done; _d = _c.next()) {
+            var m_i = _d.value;
+            if (m_i.media !== "audio")
+                continue;
+            try {
+                for (var _e = __values(m_i.a), _f = _e.next(); !_f.done; _f = _e.next()) {
+                    var a_i = _f.value;
+                    var match = a_i.match(/^candidate(?:[^\s]+\s){4}((?:[0-9]{1,3}\.){3}[0-9]{1,3})\s(?:[^\s]+\s){2}srflx/);
+                    if (match)
+                        return match[1];
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_f && !_f.done && (_b = _e.return)) _b.call(_e);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
         }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
+        }
+        finally { if (e_1) throw e_1.error; }
     }
     return undefined;
 }
@@ -104,6 +153,7 @@ function addOptionTag(headers, headerField, optionTag) {
 }
 exports.addOptionTag = addOptionTag;
 function filterSdpCandidates(keep, sdp) {
+    var e_3, _a;
     var shouldKeepCandidate = function (candidateLine) {
         return ((keep.host && !!candidateLine.match(/host/)) ||
             (keep.srflx && !!candidateLine.match(/srflx/)) ||
@@ -111,13 +161,22 @@ function filterSdpCandidates(keep, sdp) {
     };
     var parsedSdp = core.parseSdp(sdp);
     var arr = parsedSdp.m[0].a;
-    for (var _i = 0, _a = arr.slice(); _i < _a.length; _i++) {
-        var line = _a[_i];
-        if (!line.match(/^candidate/))
-            continue;
-        if (!shouldKeepCandidate(line)) {
-            arr.splice(arr.indexOf(line), 1);
+    try {
+        for (var _b = __values(__spread(arr)), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var line = _c.value;
+            if (!line.match(/^candidate/))
+                continue;
+            if (!shouldKeepCandidate(line)) {
+                arr.splice(arr.indexOf(line), 1);
+            }
         }
+    }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    finally {
+        try {
+            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+        }
+        finally { if (e_3) throw e_3.error; }
     }
     return core.stringifySdp(sdp);
 }

@@ -3,18 +3,18 @@
         "module": "commonjs",
         "target": "es5",
         "lib": [
-            "es5",
-            "es2015",
-            "dom"
-        ],
+                    "es5",
+                    "es2015",
+                    "dom"
+            ],
         "declaration": true,
         "outDir": "./dist",
         "strictNullChecks": true,
         "sourceMap": false,
         "newLine": "LF",
-        "downlevelIteration": false,
-        "noUnusedLocals": true, 
-        "noUnusedParameters": false, 
+        "downlevelIteration": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
         "strictPropertyInitialization": true,
         "strictFunctionTypes": true
     },

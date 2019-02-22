@@ -1,5 +1,5 @@
-import * as sip from "./core/sip";
-import * as _sdp_ from "./core/sdp";
+import * as sip from "./legacy/sip";
+import * as _sdp_ from "./legacy/sdp";
 import * as types from "./types";
 import setPrototypeOf = require("setprototypeof");
 

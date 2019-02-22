@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var sip = require("./core/sip");
-var _sdp_ = require("./core/sdp");
+var sip = require("./legacy/sip");
+var _sdp_ = require("./legacy/sdp");
 var setPrototypeOf = require("setprototypeof");
 function makeStreamParser(handler, floodHandler) {
     var streamParser = (function () {

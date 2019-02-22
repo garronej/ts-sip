@@ -3,10 +3,9 @@
   "description": "A collection of low level tools to work with the SIP protocol.",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "scripts": {
     "tsc": "node ./node_modules/typescript/bin/tsc -p ./tsconfig.json",
-    "tsc-w": "node ./node_modules/typescript/bin/tsc -w -p ./tsconfig.json",
     "test": "node ./dist/test/main"
   },
   "repository": {
@@ -22,10 +21,10 @@
     "setprototypeof": "^1.1.1"
   },
   "devDependencies": {
-    "@types/ws": "^5.1.2",
-    "@types/node": "^10.3.4",
     "@types/colors": "^1.2.1",
-    "typescript": "^3.0.1",
+    "@types/node": "^10.3.4",
+    "@types/ws": "^5.1.2",
+    "typescript": "^3.3.3333",
     "ws": "^6.0.0"
   }
 }
