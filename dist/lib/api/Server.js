@@ -41,8 +41,8 @@ var util = require("util");
 require("colors");
 var Server = /** @class */ (function () {
     function Server(handlers, logger) {
-        if (logger === void 0) { logger = {}; }
         var _this = this;
+        if (logger === void 0) { logger = {}; }
         this.handlers = handlers;
         this.logger = logger;
         (function () {

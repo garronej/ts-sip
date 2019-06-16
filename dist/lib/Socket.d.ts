@@ -48,7 +48,7 @@ export declare class Socket {
      *
      * */
     readonly evtError: SyncEvent<Error>;
-    static readonly maxBytesHeaders = 7820;
+    static readonly maxBytesHeaders = 156400;
     static readonly maxContentLength = 24624;
     readonly localPort: number;
     readonly remotePort: number;

@@ -3,7 +3,7 @@
   "description": "A collection of low level tools to work with the SIP protocol.",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "scripts": {
     "tsc": "node ./node_modules/typescript/bin/tsc -p ./tsconfig.json",
     "test": "node ./dist/test/main"
@@ -24,7 +24,7 @@
     "@types/colors": "^1.2.1",
     "@types/node": "^10.3.4",
     "@types/ws": "^5.1.2",
-    "typescript": "^3.3.3333",
+    "typescript": "^3.5.2",
     "ws": "^6.0.0"
   }
 }

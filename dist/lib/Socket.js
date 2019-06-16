@@ -25,9 +25,9 @@ var Socket = /** @class */ (function () {
      * used by the underlying socket connection.
      */
     function Socket(socket, isRemoteTrusted, spoofedAddressAndPort, connectionTimeout) {
+        var _this = this;
         if (spoofedAddressAndPort === void 0) { spoofedAddressAndPort = {}; }
         if (connectionTimeout === void 0) { connectionTimeout = 3000; }
-        var _this = this;
         this.spoofedAddressAndPort = spoofedAddressAndPort;
         /** To store data contextually link to this socket */
         this.misc = {};
@@ -303,7 +303,7 @@ var Socket = /** @class */ (function () {
             }
         }
     };
-    Socket.maxBytesHeaders = 7820;
+    Socket.maxBytesHeaders = 156400;
     Socket.maxContentLength = 24624;
     return Socket;
 }());

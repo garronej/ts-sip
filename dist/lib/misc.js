@@ -78,7 +78,7 @@ function readSrflxAddrInSdp(sdp) {
             if (m_i.media !== "audio")
                 continue;
             try {
-                for (var _e = __values(m_i.a), _f = _e.next(); !_f.done; _f = _e.next()) {
+                for (var _e = (e_2 = void 0, __values(m_i.a)), _f = _e.next(); !_f.done; _f = _e.next()) {
                     var a_i = _f.value;
                     var match = a_i.match(/^candidate(?:[^\s]+\s){4}((?:[0-9]{1,3}\.){3}[0-9]{1,3})\s(?:[^\s]+\s){2}srflx/);
                     if (match)

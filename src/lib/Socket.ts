@@ -68,7 +68,7 @@ export class Socket {
      * */
     public readonly evtError = new SyncEvent<Error>();
 
-    public static readonly maxBytesHeaders = 7820;
+    public static readonly maxBytesHeaders = 156400;
     public static readonly maxContentLength = 24624;
 
     public get localPort() {
