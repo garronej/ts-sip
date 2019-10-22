@@ -151,7 +151,7 @@ export function enableKeepAlive(
     interval = 120 * 1000
 ): void {
 
-    const methodName = keepAlive.methodName;
+    const { methodName } = keepAlive;
     type Params = keepAlive.Params;
     type Response = keepAlive.Response;
 
@@ -183,6 +183,8 @@ export function enableKeepAlive(
 
             }
 
+            const before= Date.now();
+
             try {
 
                 await socket.evtClose.waitFor(interval);
@@ -190,6 +192,20 @@ export function enableKeepAlive(
                 break;
 
             } catch{ }
+
+            if( Math.abs( Date.now() - before  - interval) > 10000  ){
+
+                socket.destroy([
+                    "A keep alive 'PING' haven't been sent as scheduled, we prefer closing the connection.",
+                    "This happen for example while running in react native and the app is in the background.",
+                    "The setTimeout callbacks are called only when the app is woke up"
+                ].join(" "));
+
+                break;
+
+            }
+
+
 
         }
 

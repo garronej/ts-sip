@@ -13,10 +13,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -131,7 +132,7 @@ function enableKeepAlive(socket, interval) {
     if (interval === void 0) { interval = 120 * 1000; }
     var methodName = ApiMessage_1.keepAlive.methodName;
     (function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a, _b;
+        var _a, before, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -141,7 +142,7 @@ function enableKeepAlive(socket, interval) {
                     _c.sent();
                     _c.label = 2;
                 case 2:
-                    if (!true) return [3 /*break*/, 10];
+                    if (!true) return [3 /*break*/, 11];
                     _c.label = 3;
                 case 3:
                     _c.trys.push([3, 5, , 6]);
@@ -154,18 +155,30 @@ function enableKeepAlive(socket, interval) {
                     return [3 /*break*/, 6];
                 case 5:
                     _a = _c.sent();
-                    return [3 /*break*/, 10];
+                    return [3 /*break*/, 11];
                 case 6:
-                    _c.trys.push([6, 8, , 9]);
-                    return [4 /*yield*/, socket.evtClose.waitFor(interval)];
+                    before = Date.now();
+                    _c.label = 7;
                 case 7:
-                    _c.sent();
-                    return [3 /*break*/, 10];
+                    _c.trys.push([7, 9, , 10]);
+                    return [4 /*yield*/, socket.evtClose.waitFor(interval)];
                 case 8:
+                    _c.sent();
+                    return [3 /*break*/, 11];
+                case 9:
                     _b = _c.sent();
-                    return [3 /*break*/, 9];
-                case 9: return [3 /*break*/, 2];
-                case 10: return [2 /*return*/];
+                    return [3 /*break*/, 10];
+                case 10:
+                    if (Math.abs(Date.now() - before - interval) > 10000) {
+                        socket.destroy([
+                            "A keep alive 'PING' haven't been sent as scheduled, we prefer closing the connection.",
+                            "This happen for example while running in react native and the app is in the background.",
+                            "The setTimeout callbacks are called only when the app is woke up"
+                        ].join(" "));
+                        return [3 /*break*/, 11];
+                    }
+                    return [3 /*break*/, 2];
+                case 11: return [2 /*return*/];
             }
         });
     }); })();
