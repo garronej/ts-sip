@@ -5,6 +5,16 @@ import { JSON_CUSTOM as ttJC } from "transfer-tools";
 
 const JSON_CUSTOM = ttJC.get();
 
+const assert = (value: any, message: string = "assert error")=> {
+
+    if( !!value ){
+        return;
+    }
+
+    throw new Error(message);
+
+};
+
 export const sipMethodName= "API";
 
 export namespace ApiMessage {
@@ -24,8 +34,8 @@ export namespace ApiMessage {
 
         sipRequest.headers[actionIdKey] = `${actionId++}`;
 
-        console.assert(payload !== null, "null is not stringifiable");
-        console.assert(!(typeof payload === "number" && isNaN(payload)), "NaN is not stringifiable");
+        assert(payload !== null, "null is not stringifiable");
+        assert(!(typeof payload === "number" && isNaN(payload)), "NaN is not stringifiable");
 
         misc.setPacketContent(
             sipRequest,
@@ -56,7 +66,7 @@ export namespace ApiMessage {
             misc.getPacketContent(sipRequest).toString("utf8")
         );
 
-        console.assert(!sanityCheck || sanityCheck(payload));
+        assert(!sanityCheck || sanityCheck(payload));
 
         return payload;
 
