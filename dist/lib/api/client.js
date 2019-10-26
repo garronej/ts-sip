@@ -132,7 +132,7 @@ function enableKeepAlive(socket, interval) {
     if (interval === void 0) { interval = 120 * 1000; }
     var methodName = ApiMessage_1.keepAlive.methodName;
     (function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a, before, _b;
+        var whereTimerDelayed, _a, before, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -142,43 +142,53 @@ function enableKeepAlive(socket, interval) {
                     _c.sent();
                     _c.label = 2;
                 case 2:
-                    if (!true) return [3 /*break*/, 11];
+                    whereTimerDelayed = false;
                     _c.label = 3;
                 case 3:
-                    _c.trys.push([3, 5, , 6]);
+                    if (!true) return [3 /*break*/, 12];
+                    _c.label = 4;
+                case 4:
+                    _c.trys.push([4, 6, , 7]);
                     return [4 /*yield*/, sendRequest(socket, methodName, "PING", {
-                            "timeout": 5 * 1000,
+                            //"timeout": 5 * 1000,
+                            "timeout": (function () {
+                                if (!whereTimerDelayed) {
+                                    return 5 * 1000;
+                                }
+                                whereTimerDelayed = false;
+                                return 500;
+                            })(),
                             "sanityCheck": function (response) { return response === "PONG"; }
                         })];
-                case 4:
-                    _c.sent();
-                    return [3 /*break*/, 6];
                 case 5:
-                    _a = _c.sent();
-                    return [3 /*break*/, 11];
-                case 6:
-                    before = Date.now();
-                    _c.label = 7;
-                case 7:
-                    _c.trys.push([7, 9, , 10]);
-                    return [4 /*yield*/, socket.evtClose.waitFor(interval)];
-                case 8:
                     _c.sent();
-                    return [3 /*break*/, 11];
+                    return [3 /*break*/, 7];
+                case 6:
+                    _a = _c.sent();
+                    return [3 /*break*/, 12];
+                case 7:
+                    before = Date.now();
+                    _c.label = 8;
+                case 8:
+                    _c.trys.push([8, 10, , 11]);
+                    return [4 /*yield*/, socket.evtClose.waitFor(interval)];
                 case 9:
-                    _b = _c.sent();
-                    return [3 /*break*/, 10];
+                    _c.sent();
+                    return [3 /*break*/, 12];
                 case 10:
-                    if (Math.abs(Date.now() - before - interval) > 10000) {
-                        socket.destroy([
-                            "A keep alive 'PING' haven't been sent as scheduled, we prefer closing the connection.",
-                            "This happen for example while running in react native and the app is in the background.",
-                            "The setTimeout callbacks are called only when the app is woke up"
-                        ].join(" "));
-                        return [3 /*break*/, 11];
+                    _b = _c.sent();
+                    return [3 /*break*/, 11];
+                case 11:
+                    if (Math.abs(Date.now() - before - interval) > 500) {
+                        /*NOTE: If the timeout was delayed ( happens when react-native app in background on android )
+                        we want to quickly see if the connection is still usable so next ping we send we do not
+                        wait 5 second for the server to respond, if the server did not responded "PONG" within the
+                        next 0.5 second we close the connection.
+                        */
+                        whereTimerDelayed = true;
                     }
-                    return [3 /*break*/, 2];
-                case 11: return [2 /*return*/];
+                    return [3 /*break*/, 3];
+                case 12: return [2 /*return*/];
             }
         });
     }); })();

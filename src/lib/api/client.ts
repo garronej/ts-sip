@@ -163,6 +163,8 @@ export function enableKeepAlive(
 
         }
 
+        let whereTimerDelayed= false;
+
         while (true) {
 
             try {
@@ -172,7 +174,18 @@ export function enableKeepAlive(
                     methodName,
                     "PING",
                     {
-                        "timeout": 5 * 1000,
+                        //"timeout": 5 * 1000,
+                        "timeout": (()=>{
+
+                            if( !whereTimerDelayed ){
+                                return 5 * 1000;
+                            }
+
+                            whereTimerDelayed= false;
+
+                            return 500;
+
+                        })(),
                         "sanityCheck": response => response === "PONG"
                     }
                 );
@@ -182,6 +195,7 @@ export function enableKeepAlive(
                 break;
 
             }
+
 
             const before= Date.now();
 
@@ -193,18 +207,16 @@ export function enableKeepAlive(
 
             } catch{ }
 
-            if( Math.abs( Date.now() - before  - interval) > 10000  ){
+            if( Math.abs( Date.now() - before  - interval) > 500  ){
 
-                socket.destroy([
-                    "A keep alive 'PING' haven't been sent as scheduled, we prefer closing the connection.",
-                    "This happen for example while running in react native and the app is in the background.",
-                    "The setTimeout callbacks are called only when the app is woke up"
-                ].join(" "));
-
-                break;
+                /*NOTE: If the timeout was delayed ( happens when react-native app in background on android )
+                we want to quickly see if the connection is still usable so next ping we send we do not 
+                wait 5 second for the server to respond, if the server did not responded "PONG" within the
+                next 0.5 second we close the connection.
+                */
+                whereTimerDelayed= true;
 
             }
-
 
 
         }
