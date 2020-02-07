@@ -1,7 +1,7 @@
 process.once("unhandledRejection", error => { throw error; });
 
 import * as sipLibrary from "../lib";
-import { SyncEvent } from "ts-events-extended";
+import { Evt } from "ts-evt";
 
 const fakeSockets: ({ idString: string; socket: sipLibrary.Socket })[] = [
 
@@ -14,7 +14,7 @@ const fakeSockets: ({ idString: string; socket: sipLibrary.Socket })[] = [
                 "localPort": 2222,
                 "remoteAddress": "192.168.0.3",
                 "remotePort": 3333,
-                "evtClose": new SyncEvent<boolean>(),
+                "evtClose": new Evt<boolean>(),
                 "hasBeenDestroyed": false
             }) as any;
 
@@ -32,7 +32,7 @@ const fakeSockets: ({ idString: string; socket: sipLibrary.Socket })[] = [
                 "localPort": 2222,
                 "remoteAddress": "192.168.0.3",
                 "remotePort": 3333,
-                "evtClose": new SyncEvent<boolean>(),
+                "evtClose": new Evt<boolean>(),
                 "hasBeenDestroyed": false
             }) as any;
 
@@ -54,7 +54,7 @@ const fakeSockets: ({ idString: string; socket: sipLibrary.Socket })[] = [
                 "localPort": 2222,
                 "remoteAddress": "192.168.0.3",
                 "remotePort": 3333,
-                "evtClose": new SyncEvent<boolean>(),
+                "evtClose": new Evt<boolean>(),
                 "hasBeenDestroyed": false
             }) as any;
 

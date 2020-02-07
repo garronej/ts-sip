@@ -1,4 +1,4 @@
-import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
+import { Evt, VoidEvt } from "ts-evt";
 import * as types from "./types";
 import { AddrAndPorts } from "./IConnection";
 import "colors";
@@ -17,23 +17,23 @@ export declare class Socket {
      * ( with false ) when underlying socket post "close"
      *
      */
-    readonly evtClose: SyncEvent<boolean>;
+    readonly evtClose: Evt<boolean>;
     /**
      * Posted when underlying socket connect,
      * If underlying socket was already connected when
      * when constructed posted synchronously when instantiated.
      *
      *  */
-    readonly evtConnect: VoidSyncEvent;
+    readonly evtConnect: VoidEvt;
     /** API traffic is extracted, won't be posted here */
-    readonly evtResponse: SyncEvent<types.Response>;
-    readonly evtRequest: SyncEvent<types.Request>;
+    readonly evtResponse: Evt<types.Response>;
+    readonly evtRequest: Evt<types.Request>;
     /** Post chunk of data as received by the underlying connection*/
-    readonly evtData: SyncEvent<types.IBuffer>;
+    readonly evtData: Evt<types.IBuffer>;
     /** Post chunk of data as wrote on underlying socket (once write return true )*/
-    readonly evtDataOut: SyncEvent<types.IBuffer>;
+    readonly evtDataOut: Evt<types.IBuffer>;
     /** Chance to modify packet before it is serialized */
-    readonly evtPacketPreWrite: SyncEvent<types.Packet>;
+    readonly evtPacketPreWrite: Evt<types.Packet>;
     /**
      * Provided only so the error can be logged.
      *
@@ -47,7 +47,7 @@ export declare class Socket {
      *
      *
      * */
-    readonly evtError: SyncEvent<Error>;
+    readonly evtError: Evt<Error>;
     static readonly maxBytesHeaders = 156400;
     static readonly maxContentLength = 24624;
     readonly localPort: number;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var ts_events_extended_1 = require("ts-events-extended");
+var ts_evt_1 = require("ts-evt");
 var core = require("./core");
 var misc = require("./misc");
 var ApiMessage_1 = require("./api/ApiMessage");
@@ -42,23 +42,23 @@ var Socket = /** @class */ (function () {
          * ( with false ) when underlying socket post "close"
          *
          */
-        this.evtClose = new ts_events_extended_1.SyncEvent();
+        this.evtClose = new ts_evt_1.Evt();
         /**
          * Posted when underlying socket connect,
          * If underlying socket was already connected when
          * when constructed posted synchronously when instantiated.
          *
          *  */
-        this.evtConnect = new ts_events_extended_1.VoidSyncEvent();
+        this.evtConnect = new ts_evt_1.VoidEvt();
         /** API traffic is extracted, won't be posted here */
-        this.evtResponse = new ts_events_extended_1.SyncEvent();
-        this.evtRequest = new ts_events_extended_1.SyncEvent();
+        this.evtResponse = new ts_evt_1.Evt();
+        this.evtRequest = new ts_evt_1.Evt();
         /** Post chunk of data as received by the underlying connection*/
-        this.evtData = new ts_events_extended_1.SyncEvent();
+        this.evtData = new ts_evt_1.Evt();
         /** Post chunk of data as wrote on underlying socket (once write return true )*/
-        this.evtDataOut = new ts_events_extended_1.SyncEvent();
+        this.evtDataOut = new ts_evt_1.Evt();
         /** Chance to modify packet before it is serialized */
-        this.evtPacketPreWrite = new ts_events_extended_1.SyncEvent();
+        this.evtPacketPreWrite = new ts_evt_1.Evt();
         /**
          * Provided only so the error can be logged.
          *
@@ -72,7 +72,7 @@ var Socket = /** @class */ (function () {
          *
          *
          * */
-        this.evtError = new ts_events_extended_1.SyncEvent();
+        this.evtError = new ts_evt_1.Evt();
         this.openTimer = null;
         /** Readonly, true if destroy have been called ( not called internally ) */
         this.haveBeedDestroyed = false;
@@ -257,11 +257,11 @@ var Socket = /** @class */ (function () {
             return log(getKey(direction), misc.stringify(sipPacket)[getColor(direction)]);
         };
         if (!!params.incomingTraffic) {
-            this.loggerEvt.evtPacketIn = new ts_events_extended_1.SyncEvent();
+            this.loggerEvt.evtPacketIn = new ts_evt_1.Evt();
             this.loggerEvt.evtPacketIn.attach(matchPacket, function (sipPacket) { return onPacket(sipPacket, "IN"); });
         }
         if (!!params.outgoingTraffic) {
-            this.loggerEvt.evtPacketOut = new ts_events_extended_1.SyncEvent();
+            this.loggerEvt.evtPacketOut = new ts_evt_1.Evt();
             this.loggerEvt.evtPacketOut.attach(matchPacket, function (sipPacket) { return onPacket(sipPacket, "OUT"); });
         }
         if (!!params.error) {

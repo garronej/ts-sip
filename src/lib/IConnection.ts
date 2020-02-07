@@ -1,5 +1,5 @@
 
-import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
+import { Evt, VoidEvt } from "ts-evt";
 import * as types from "./types";
 
 /** 
@@ -187,10 +187,10 @@ export class WebSocketConnection implements IConnection {
     public readonly localAddress: string = "_unknown_local_address_";
     public readonly remoteAddress: string = "_unknown_remote_address_";
 
-    private readonly evtMessageEvent = new SyncEvent<MessageEvent>();
-    private readonly evtError = new SyncEvent<Error>();
-    private readonly evtClose = new SyncEvent<boolean>();
-    private readonly evtConnect = new VoidSyncEvent();
+    private readonly evtMessageEvent = new Evt<MessageEvent>();
+    private readonly evtError = new Evt<Error>();
+    private readonly evtClose = new Evt<boolean>();
+    private readonly evtConnect = new VoidEvt();
 
     private readonly websocket: WebSocket | import("ws");
 

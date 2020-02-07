@@ -1,4 +1,4 @@
-import { SyncEvent, VoidSyncEvent } from "ts-events-extended";
+import { Evt, VoidEvt } from "ts-evt";
 
 import * as types from "./types";
 import * as core from "./core";
@@ -31,7 +31,7 @@ export class Socket {
      * ( with false ) when underlying socket post "close"
      * 
      */
-    public readonly evtClose = new SyncEvent<boolean>();
+    public readonly evtClose = new Evt<boolean>();
 
     /** 
      * Posted when underlying socket connect,
@@ -39,19 +39,19 @@ export class Socket {
      * when constructed posted synchronously when instantiated.
      * 
      *  */
-    public readonly evtConnect = new VoidSyncEvent();
+    public readonly evtConnect = new VoidEvt();
 
     /** API traffic is extracted, won't be posted here */
-    public readonly evtResponse = new SyncEvent<types.Response>();
-    public readonly evtRequest = new SyncEvent<types.Request>();
+    public readonly evtResponse = new Evt<types.Response>();
+    public readonly evtRequest = new Evt<types.Request>();
 
 
     /** Post chunk of data as received by the underlying connection*/
-    public readonly evtData = new SyncEvent<types.IBuffer>();
+    public readonly evtData = new Evt<types.IBuffer>();
     /** Post chunk of data as wrote on underlying socket (once write return true )*/
-    public readonly evtDataOut = new SyncEvent<types.IBuffer>();
+    public readonly evtDataOut = new Evt<types.IBuffer>();
     /** Chance to modify packet before it is serialized */
-    public readonly evtPacketPreWrite = new SyncEvent<types.Packet>();
+    public readonly evtPacketPreWrite = new Evt<types.Packet>();
 
     /** 
      * Provided only so the error can be logged.
@@ -66,7 +66,7 @@ export class Socket {
      * 
      * 
      * */
-    public readonly evtError = new SyncEvent<Error>();
+    public readonly evtError = new Evt<Error>();
 
     public static readonly maxBytesHeaders = 156400;
     public static readonly maxContentLength = 24624;
@@ -342,8 +342,8 @@ export class Socket {
     }
 
     private loggerEvt: {
-        evtPacketIn?: SyncEvent<types.Packet>;
-        evtPacketOut?: SyncEvent<types.Packet>;
+        evtPacketIn?: Evt<types.Packet>;
+        evtPacketOut?: Evt<types.Packet>;
     } = {};
 
     public enableLogger(
@@ -397,7 +397,7 @@ export class Socket {
 
         if (!!params.incomingTraffic) {
 
-            this.loggerEvt.evtPacketIn = new SyncEvent();
+            this.loggerEvt.evtPacketIn = new Evt();
 
             this.loggerEvt.evtPacketIn.attach(
                 matchPacket,
@@ -408,7 +408,7 @@ export class Socket {
 
         if (!!params.outgoingTraffic) {
 
-            this.loggerEvt.evtPacketOut = new SyncEvent();
+            this.loggerEvt.evtPacketOut = new Evt();
 
             this.loggerEvt.evtPacketOut.attach(
                 matchPacket,
