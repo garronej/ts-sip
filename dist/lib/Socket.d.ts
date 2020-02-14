@@ -50,10 +50,10 @@ export declare class Socket {
     readonly evtError: Evt<Error>;
     static readonly maxBytesHeaders = 156400;
     static readonly maxContentLength = 24624;
-    readonly localPort: number;
-    readonly remotePort: number;
-    readonly localAddress: string;
-    readonly remoteAddress: string;
+    get localPort(): number;
+    get remotePort(): number;
+    get localAddress(): string;
+    get remoteAddress(): string;
     private readonly connection;
     private openTimer;
     /**
@@ -88,7 +88,7 @@ export declare class Socket {
      * No more traffic will occur on the socket.
      * */
     destroy(reason?: string): void;
-    readonly protocol: types.TransportProtocol;
+    get protocol(): types.TransportProtocol;
     /** Return a clone of the packet ready for next hop */
     buildNextHopPacket(sipRequest: types.Request): types.Request;
     buildNextHopPacket(sipResponse: types.Response): types.Response;
