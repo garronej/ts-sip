@@ -1,7 +1,7 @@
 process.once("unhandledRejection", error => { throw error; });
 
 import * as sipLibrary from "../lib";
-import { Evt } from "ts-evt";
+import { Evt } from "evt";
 
 const fakeSockets: ({ idString: string; socket: sipLibrary.Socket })[] = [
 

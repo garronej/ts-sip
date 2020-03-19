@@ -1,5 +1,5 @@
 
-import { Evt, VoidEvt } from "ts-evt";
+import { Evt, VoidEvt } from "evt";
 import * as types from "./types";
 
 /** 

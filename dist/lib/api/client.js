@@ -49,13 +49,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var evt_1 = require("evt");
 var misc = require("../misc");
 var ApiMessage_1 = require("./ApiMessage");
 var setPrototypeOf = require("setprototypeof");
 function sendRequest(socket, methodName, params, extra) {
     if (extra === void 0) { extra = {}; }
     return __awaiter(this, void 0, void 0, function () {
-        var mkDestroyMsg, errorLogger, sipRequest, actionId, writeSuccess, sipRequestResponse, timeoutValue, error_1, sendRequestError, response, sendRequestError;
+        var mkDestroyMsg, errorLogger, sipRequest, actionId, writeSuccess, sipRequestResponse, timeoutValue, ctx_1, error_1, sendRequestError, response, sendRequestError;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -78,9 +79,13 @@ function sendRequest(socket, methodName, params, extra) {
                     _a.label = 2;
                 case 2:
                     _a.trys.push([2, 4, , 5]);
+                    ctx_1 = evt_1.Evt.newCtx();
                     return [4 /*yield*/, Promise.race([
-                            socket.evtRequest.attachOnceExtract(function (sipRequestResponse) { return ApiMessage_1.ApiMessage.Response.matchSip(sipRequestResponse, actionId); }, timeoutValue, function () { }),
-                            new Promise(function (_, reject) { return socket.evtClose.attachOnce(sipRequest, function () { return reject(new Error("CLOSE")); }); })
+                            socket.evtRequest.attachOnceExtract(function (sipRequestResponse) { return ApiMessage_1.ApiMessage.Response.matchSip(sipRequestResponse, actionId); }, ctx_1, timeoutValue, function () { return ctx_1.done(); }),
+                            new Promise(function (_, reject) { return socket.evtClose.attachOnce(ctx_1, function () {
+                                ctx_1.done();
+                                reject(new Error("CLOSE"));
+                            }); })
                         ])];
                 case 3:
                     sipRequestResponse = _a.sent();

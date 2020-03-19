@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var ts_evt_1 = require("ts-evt");
+var evt_1 = require("evt");
 /** Implementation for net.Socket and tls.Socket */
 var NetSocketConnection = /** @class */ (function () {
     function NetSocketConnection(netSocket) {
@@ -82,10 +82,10 @@ var WebSocketConnection = /** @class */ (function () {
         this.remotePort = NaN;
         this.localAddress = "_unknown_local_address_";
         this.remoteAddress = "_unknown_remote_address_";
-        this.evtMessageEvent = new ts_evt_1.Evt();
-        this.evtError = new ts_evt_1.Evt();
-        this.evtClose = new ts_evt_1.Evt();
-        this.evtConnect = new ts_evt_1.VoidEvt();
+        this.evtMessageEvent = new evt_1.Evt();
+        this.evtError = new evt_1.Evt();
+        this.evtClose = new evt_1.Evt();
+        this.evtConnect = new evt_1.VoidEvt();
         this.websocket = websocket;
         this.websocket.onmessage = function (messageEvent) {
             return _this.evtMessageEvent.post(messageEvent);

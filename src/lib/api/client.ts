@@ -1,3 +1,4 @@
+import { Evt } from "evt";
 import { Socket } from "../Socket";
 import * as misc from "../misc";
 import * as types from "../types";
@@ -52,14 +53,23 @@ export async function sendRequest<Params, Response>(
 
     try {
 
+        const ctx = Evt.newCtx();
+
         sipRequestResponse = await Promise.race([
             socket.evtRequest.attachOnceExtract(
                 sipRequestResponse => ApiMessage.Response.matchSip(sipRequestResponse, actionId),
+                ctx,
                 timeoutValue,
-                () => { }
+                () => ctx.done()
             ),
             new Promise<never>(
-                (_, reject) => socket.evtClose.attachOnce(sipRequest, () => reject(new Error("CLOSE")))
+                (_, reject) => socket.evtClose.attachOnce(
+                    ctx,
+                    () => {
+                        ctx.done();
+                        reject(new Error("CLOSE"));
+                    }
+                )
             )
         ]);
 
@@ -81,7 +91,7 @@ export async function sendRequest<Params, Response>(
             }
 
             socket.destroy(
-                mkDestroyMsg( "Request timed out")
+                mkDestroyMsg("Request timed out")
             );
 
         } else {
@@ -163,7 +173,7 @@ export function enableKeepAlive(
 
         }
 
-        let whereTimerDelayed= false;
+        let whereTimerDelayed = false;
 
         while (true) {
 
@@ -175,13 +185,13 @@ export function enableKeepAlive(
                     "PING",
                     {
                         //"timeout": 5 * 1000,
-                        "timeout": (()=>{
+                        "timeout": (() => {
 
-                            if( !whereTimerDelayed ){
+                            if (!whereTimerDelayed) {
                                 return 5 * 1000;
                             }
 
-                            whereTimerDelayed= false;
+                            whereTimerDelayed = false;
 
                             return 500;
 
@@ -197,7 +207,7 @@ export function enableKeepAlive(
             }
 
 
-            const before= Date.now();
+            const before = Date.now();
 
             try {
 
@@ -207,14 +217,14 @@ export function enableKeepAlive(
 
             } catch{ }
 
-            if( Math.abs( Date.now() - before  - interval) > 500  ){
+            if (Math.abs(Date.now() - before - interval) > 500) {
 
                 /*NOTE: If the timeout was delayed ( happens when react-native app in background on android )
                 we want to quickly see if the connection is still usable so next ping we send we do not 
                 wait 5 second for the server to respond, if the server did not responded "PONG" within the
                 next 0.5 second we close the connection.
                 */
-                whereTimerDelayed= true;
+                whereTimerDelayed = true;
 
             }
 
