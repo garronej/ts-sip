@@ -16,7 +16,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "colors": "^1.3.0",
-    "evt": "^1.0.16",
+    "evt": "^1.0.17",
     "setprototypeof": "^1.1.1",
     "transfer-tools": "garronej/transfer-tools"
   },
