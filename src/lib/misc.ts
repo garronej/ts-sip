@@ -74,7 +74,7 @@ export function isPlainMessageRequest(
     return (
         sipRequest.method === "MESSAGE" &&
         ( !withAuth || "authorization" in sipRequest.headers ) &&
-        sipRequest.headers["content-type"]!.toLowerCase().match(/^text\/plain/) 
+        !!sipRequest.headers["content-type"]?.toLowerCase().match(/^text\/plain/) 
     );
 
 }
