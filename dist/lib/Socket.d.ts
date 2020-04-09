@@ -1,4 +1,3 @@
-import { Evt, VoidEvt } from "evt";
 import * as types from "./types";
 import { AddrAndPorts } from "./IConnection";
 import "colors";
@@ -17,23 +16,23 @@ export declare class Socket {
      * ( with false ) when underlying socket post "close"
      *
      */
-    readonly evtClose: Evt<boolean>;
+    readonly evtClose: import("evt/dist/lib/types").Evt<boolean>;
     /**
      * Posted when underlying socket connect,
      * If underlying socket was already connected when
      * when constructed posted synchronously when instantiated.
      *
      *  */
-    readonly evtConnect: VoidEvt;
+    readonly evtConnect: import("evt/dist/lib/types").VoidEvt;
     /** API traffic is extracted, won't be posted here */
-    readonly evtResponse: Evt<types.Response>;
-    readonly evtRequest: Evt<types.Request>;
+    readonly evtResponse: import("evt/dist/lib/types").Evt<types.Response>;
+    readonly evtRequest: import("evt/dist/lib/types").Evt<types.Request>;
     /** Post chunk of data as received by the underlying connection*/
-    readonly evtData: Evt<types.IBuffer>;
+    readonly evtData: import("evt/dist/lib/types").Evt<types.IBuffer>;
     /** Post chunk of data as wrote on underlying socket (once write return true )*/
-    readonly evtDataOut: Evt<types.IBuffer>;
+    readonly evtDataOut: import("evt/dist/lib/types").Evt<types.IBuffer>;
     /** Chance to modify packet before it is serialized */
-    readonly evtPacketPreWrite: Evt<types.Packet>;
+    readonly evtPacketPreWrite: import("evt/dist/lib/types").Evt<types.Packet>;
     /**
      * Provided only so the error can be logged.
      *
@@ -47,7 +46,7 @@ export declare class Socket {
      *
      *
      * */
-    readonly evtError: Evt<Error>;
+    readonly evtError: import("evt/dist/lib/types").Evt<Error>;
     static readonly maxBytesHeaders = 156400;
     static readonly maxContentLength = 24624;
     get localPort(): number;
