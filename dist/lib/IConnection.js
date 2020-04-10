@@ -85,7 +85,7 @@ var WebSocketConnection = /** @class */ (function () {
         this.evtMessageEvent = new evt_1.Evt();
         this.evtError = new evt_1.Evt();
         this.evtClose = new evt_1.Evt();
-        this.evtConnect = new evt_1.VoidEvt();
+        this.evtConnect = evt_1.Evt.create();
         this.websocket = websocket;
         this.websocket.onmessage = function (messageEvent) {
             return _this.evtMessageEvent.post(messageEvent);

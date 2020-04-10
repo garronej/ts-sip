@@ -1,19 +1,10 @@
 import * as types from "../types";
 import * as core from "../core";
 import * as misc from "../misc";
+import { assert } from "evt/dist/tools/typeSafety/assert";
 import { JSON_CUSTOM as ttJC } from "transfer-tools";
 
 const JSON_CUSTOM = ttJC.get();
-
-const assert = (value: any, message: string = "assert error")=> {
-
-    if( !!value ){
-        return;
-    }
-
-    throw new Error(message);
-
-};
 
 export const sipMethodName= "API";
 

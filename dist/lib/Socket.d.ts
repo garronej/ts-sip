@@ -23,7 +23,7 @@ export declare class Socket {
      * when constructed posted synchronously when instantiated.
      *
      *  */
-    readonly evtConnect: import("evt/dist/lib/types").VoidEvt;
+    readonly evtConnect: import("evt").VoidEvt;
     /** API traffic is extracted, won't be posted here */
     readonly evtResponse: import("evt/dist/lib/types").Evt<types.Response>;
     readonly evtRequest: import("evt/dist/lib/types").Evt<types.Request>;

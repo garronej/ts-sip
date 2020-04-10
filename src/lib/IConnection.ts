@@ -1,5 +1,5 @@
 
-import { Evt, VoidEvt } from "evt";
+import { Evt } from "evt";
 import * as types from "./types";
 
 /** 
@@ -190,7 +190,7 @@ export class WebSocketConnection implements IConnection {
     private readonly evtMessageEvent = new Evt<MessageEvent>();
     private readonly evtError = new Evt<Error>();
     private readonly evtClose = new Evt<boolean>();
-    private readonly evtConnect = new VoidEvt();
+    private readonly evtConnect = Evt.create();
 
     private readonly websocket: WebSocket | import("ws");
 

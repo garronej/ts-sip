@@ -1,4 +1,4 @@
-import { Evt, VoidEvt } from "evt";
+import { Evt } from "evt";
 
 import * as types from "./types";
 import * as core from "./core";
@@ -39,7 +39,7 @@ export class Socket {
      * when constructed posted synchronously when instantiated.
      * 
      *  */
-    public readonly evtConnect = new VoidEvt();
+    public readonly evtConnect = Evt.create();
 
     /** API traffic is extracted, won't be posted here */
     public readonly evtResponse = new Evt<types.Response>();

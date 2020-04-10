@@ -49,7 +49,7 @@ var Socket = /** @class */ (function () {
          * when constructed posted synchronously when instantiated.
          *
          *  */
-        this.evtConnect = new evt_1.VoidEvt();
+        this.evtConnect = evt_1.Evt.create();
         /** API traffic is extracted, won't be posted here */
         this.evtResponse = new evt_1.Evt();
         this.evtRequest = new evt_1.Evt();

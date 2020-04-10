@@ -2,15 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var core = require("../core");
 var misc = require("../misc");
+var assert_1 = require("evt/dist/tools/typeSafety/assert");
 var transfer_tools_1 = require("transfer-tools");
 var JSON_CUSTOM = transfer_tools_1.JSON_CUSTOM.get();
-var assert = function (value, message) {
-    if (message === void 0) { message = "assert error"; }
-    if (!!value) {
-        return;
-    }
-    throw new Error(message);
-};
 exports.sipMethodName = "API";
 var ApiMessage;
 (function (ApiMessage) {
@@ -22,8 +16,8 @@ var ApiMessage;
             "\r\n"
         ].join("\r\n"), "utf8"));
         sipRequest.headers[actionIdKey] = "" + actionId++;
-        assert(payload !== null, "null is not stringifiable");
-        assert(!(typeof payload === "number" && isNaN(payload)), "NaN is not stringifiable");
+        assert_1.assert(payload !== null, "null is not stringifiable");
+        assert_1.assert(!(typeof payload === "number" && isNaN(payload)), "NaN is not stringifiable");
         misc.setPacketContent(sipRequest, JSON_CUSTOM.stringify(payload));
         return sipRequest;
     }
@@ -39,7 +33,7 @@ var ApiMessage;
     ApiMessage.readActionId = readActionId;
     function parsePayload(sipRequest, sanityCheck) {
         var payload = JSON_CUSTOM.parse(misc.getPacketContent(sipRequest).toString("utf8"));
-        assert(!sanityCheck || sanityCheck(payload));
+        assert_1.assert(!sanityCheck || sanityCheck(payload));
         return payload;
     }
     ApiMessage.parsePayload = parsePayload;
