@@ -42,6 +42,7 @@ var __spread = (this && this.__spread) || function () {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.buildNextHopPacket = exports.isResponse = exports.getContact = exports.filterSdpCandidates = exports.addOptionTag = exports.hasOptionTag = exports.parseOptionTags = exports.stringifyPath = exports.parsePath = exports.isPlainMessageRequest = exports.readSrflxAddrInSdp = exports.getPacketContent = exports.setPacketContent = exports.clonePacket = exports.matchRequest = exports.stringify = void 0;
 var core = require("./core");
 //export const regIdKey = "reg-id";
 //export const instanceIdKey = "+sip.instance";
@@ -106,8 +107,8 @@ function readSrflxAddrInSdp(sdp) {
 }
 exports.readSrflxAddrInSdp = readSrflxAddrInSdp;
 function isPlainMessageRequest(sipRequest, withAuth) {
-    if (withAuth === void 0) { withAuth = undefined; }
     var _a;
+    if (withAuth === void 0) { withAuth = undefined; }
     return (sipRequest.method === "MESSAGE" &&
         (!withAuth || "authorization" in sipRequest.headers) &&
         !!((_a = sipRequest.headers["content-type"]) === null || _a === void 0 ? void 0 : _a.toLowerCase().match(/^text\/plain/)));

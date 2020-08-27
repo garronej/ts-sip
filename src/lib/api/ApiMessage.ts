@@ -1,7 +1,7 @@
 import * as types from "../types";
 import * as core from "../core";
 import * as misc from "../misc";
-import { assert } from "evt/dist/tools/typeSafety/assert";
+import { assert } from "evt/tools/typeSafety/assert";
 import { JSON_CUSTOM as ttJC } from "transfer-tools";
 
 const JSON_CUSTOM = ttJC.get();

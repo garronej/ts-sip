@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.keepAlive = exports.ApiMessage = exports.sipMethodName = void 0;
 var core = require("../core");
 var misc = require("../misc");
-var assert_1 = require("evt/dist/tools/typeSafety/assert");
+var assert_1 = require("evt/tools/typeSafety/assert");
 var transfer_tools_1 = require("transfer-tools");
 var JSON_CUSTOM = transfer_tools_1.JSON_CUSTOM.get();
 exports.sipMethodName = "API";

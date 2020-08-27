@@ -1,6 +1,7 @@
 "use strict";
 /** Trim from sip.js project */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateBranch = exports.checkMessage = exports.parse = exports.makeStreamParser = exports.stringify = exports.stringifyAuthHeader = exports.stringifyUri = exports.parseUri = exports.parseAOR = void 0;
 // Actual stack code begins here
 function parseResponse(rs, m) {
     var r = rs.match(/^SIP\/(\d+\.\d+)\s+(\d+)\s*(.*)\s*$/);

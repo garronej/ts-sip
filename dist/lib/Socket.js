@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Socket = void 0;
 var evt_1 = require("evt");
 var core = require("./core");
 var misc = require("./misc");
@@ -143,28 +144,28 @@ var Socket = /** @class */ (function () {
         get: function () {
             return this.spoofedAddressAndPort.localPort || this.connection.localPort;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Socket.prototype, "remotePort", {
         get: function () {
             return this.spoofedAddressAndPort.remotePort || this.connection.remotePort;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Socket.prototype, "localAddress", {
         get: function () {
             return this.spoofedAddressAndPort.localAddress || this.connection.localAddress;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Socket.prototype, "remoteAddress", {
         get: function () {
             return this.spoofedAddressAndPort.remoteAddress || this.connection.remoteAddress;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -225,7 +226,7 @@ var Socket = /** @class */ (function () {
         get: function () {
             return this.connection.protocol;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Socket.prototype.buildNextHopPacket = function (sipPacket) {

@@ -49,6 +49,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDefaultErrorLogger = exports.SendRequestError = exports.enableKeepAlive = exports.enableErrorLogging = exports.sendRequest = void 0;
 var evt_1 = require("evt");
 var misc = require("../misc");
 var ApiMessage_1 = require("./ApiMessage");

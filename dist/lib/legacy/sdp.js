@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.stringify = exports.parse = void 0;
 var parsers = {
     o: function (o) {
         var t = o.split(/\s+/);

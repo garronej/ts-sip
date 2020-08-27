@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WebSocketConnection = exports.NetSocketConnection = void 0;
 var evt_1 = require("evt");
 /** Implementation for net.Socket and tls.Socket */
 var NetSocketConnection = /** @class */ (function () {
